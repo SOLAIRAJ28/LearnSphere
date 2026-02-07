@@ -437,6 +437,19 @@ body {
   transform: translateY(-2px);
 }
 
+.view-btn {
+  color: #666;
+  border-color: #e0e0e0;
+}
+
+.view-btn:hover {
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+  border-color: #9c27b0;
+  color: white;
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+  transform: translateY(-2px);
+}
+
 /* List View */
 .course-list {
   background: linear-gradient(to bottom, white 0%, #fafbfc 100%);

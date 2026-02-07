@@ -661,11 +661,14 @@ const CourseEdit: React.FC = () => {
                                 <div className="form-group">
                                   <label>Video Link *</label>
                                   <input
-                                    type="url"
+                                    type="text"
                                     value={contentUrl}
                                     onChange={(e) => setContentUrl(e.target.value)}
-                                    placeholder="https://youtube.com/watch?v=..."
+                                    placeholder="YouTube URL or filename (e.g., Machine_Learning_Course_for_Beginners_720P.mp4)"
                                   />
+                                  <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                                    For local videos: Put video file in <strong>public</strong> folder and enter filename only
+                                  </small>
                                 </div>
                                 <div className="form-group">
                                   <label>Duration (in minutes) *</label>
@@ -685,19 +688,16 @@ const CourseEdit: React.FC = () => {
                             {contentCategory === 'document' && (
                               <>
                                 <div className="form-group">
-                                  <label>Document File *</label>
+                                  <label>Document Link *</label>
                                   <input
-                                    type="file"
-                                    accept=".pdf,.doc,.docx,.txt"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) {
-                                        // For now, store filename; in production, upload to server
-                                        setContentUrl(file.name);
-                                      }
-                                    }}
+                                    type="text"
+                                    value={contentUrl}
+                                    onChange={(e) => setContentUrl(e.target.value)}
+                                    placeholder="Document URL or filename (e.g., course-notes.pdf)"
                                   />
-                                  {contentUrl && <small className="file-name">Selected: {contentUrl}</small>}
+                                  <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                                    For local PDFs: Put file in <strong>public</strong> folder and enter filename only
+                                  </small>
                                 </div>
                                 <div className="form-group">
                                   <label className="checkbox-label">

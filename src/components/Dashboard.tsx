@@ -7,6 +7,7 @@ import SearchAndControls from './SearchAndControls';
 import CourseCard from './CourseCard';
 import CourseList from './CourseList';
 import CreateCourseModal from './CreateCourseModal';
+import ViewContentModal from './ViewContentModal';
 import Reporting from './Reporting';
 
 const Dashboard: React.FC = () => {
@@ -17,6 +18,9 @@ const Dashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedCourseId, setSelectedCourseId] = useState<string>('');
+  const [selectedCourseTitle, setSelectedCourseTitle] = useState<string>('');
 
   // Fetch courses from API
   useEffect(() => {
@@ -77,6 +81,15 @@ const Dashboard: React.FC = () => {
     alert(`Course link copied to clipboard:\n${shareLink}\n\nShare this link with specific people to give them access to "${course?.title}".`);
   };
 
+  const handleView = (courseId: string) => {
+    const course = courses.find(c => c._id === courseId);
+    if (course) {
+      setSelectedCourseId(courseId);
+      setSelectedCourseTitle(course.title);
+      setIsViewModalOpen(true);
+    }
+  };
+
   const handleRemoveTag = (courseId: string, tag: string) => {
     setCourses(
       courses.map((course) =>
@@ -110,6 +123,7 @@ const Dashboard: React.FC = () => {
                   course={course}
                   onEdit={handleEdit}
                   onShare={handleShare}
+                  onView={handleView}
                   onRemoveTag={handleRemoveTag}
                 />
               ))}
@@ -119,6 +133,7 @@ const Dashboard: React.FC = () => {
               courses={filteredCourses}
               onEdit={handleEdit}
               onShare={handleShare}
+              onView={handleView}
               onRemoveTag={handleRemoveTag}
             />
           )}
@@ -131,6 +146,13 @@ const Dashboard: React.FC = () => {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onCreateCourse={handleCreateCourse}
+          />
+          
+          <ViewContentModal
+            isOpen={isViewModalOpen}
+            onClose={() => setIsViewModalOpen(false)}
+            courseId={selectedCourseId}
+            courseTitle={selectedCourseTitle}
           />
         </main>
       )}
