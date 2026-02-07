@@ -14,8 +14,8 @@ const contentSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['Video', 'Document', 'Quiz', 'Article', 'Other'],
-      default: 'Document'
+      enum: ['video', 'document', 'image', 'article', 'quiz', 'presentation', 'infographic', 'Video', 'Document', 'Quiz', 'Article', 'Other'],
+      default: 'document'
     },
     duration: {
       type: Number,
@@ -34,6 +34,34 @@ const contentSchema = new mongoose.Schema(
     description: {
       type: String,
       default: ''
+    },
+    videoLink: {
+      type: String,
+      default: null
+    },
+    fileUrl: {
+      type: String,
+      default: null
+    },
+    imageUrl: {
+      type: String,
+      default: null
+    },
+    allowDownload: {
+      type: Boolean,
+      default: false
+    },
+    responsible: {
+      type: String,
+      default: ''
+    },
+    attachmentUrl: {
+      type: String,
+      default: null
+    },
+    attachmentLink: {
+      type: String,
+      default: null
     }
   },
   {

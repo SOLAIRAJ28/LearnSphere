@@ -6,6 +6,7 @@ import courseRoutes from './routes/courseRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import contentRoutes from './routes/contentRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
+import enrollmentRoutes from './routes/enrollmentRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api', contentRoutes);
 app.use('/api', quizRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

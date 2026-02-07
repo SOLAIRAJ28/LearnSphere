@@ -7,6 +7,7 @@ import SearchAndControls from './SearchAndControls';
 import CourseCard from './CourseCard';
 import CourseList from './CourseList';
 import CreateCourseModal from './CreateCourseModal';
+import Reporting from './Reporting';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -135,10 +136,7 @@ const Dashboard: React.FC = () => {
       )}
       
       {activeTab === 'Reporting' && (
-        <div className="tab-content">
-          <h2>Reporting</h2>
-          <p>Detailed reporting of courses</p>
-        </div>
+        <Reporting />
       )}
       
       {activeTab === 'Settings' && (

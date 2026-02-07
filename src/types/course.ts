@@ -18,11 +18,18 @@ export interface Content {
   _id: string;
   courseId: string;
   title: string;
-  category: 'article' | 'video' | 'infographic' | 'presentation' | 'document' | 'quiz';
+  category: 'video' | 'document' | 'image' | 'article' | 'quiz' | 'presentation' | 'infographic';
+  videoLink?: string;
+  fileUrl?: string;
+  imageUrl?: string;
   duration: number;
+  allowDownload?: boolean;
+  description?: string;
+  responsible?: string;
+  attachmentUrl?: string;
+  attachmentLink?: string;
   order: number;
   url: string;
-  description: string;
   createdAt?: string;
   updatedAt?: string;
 }

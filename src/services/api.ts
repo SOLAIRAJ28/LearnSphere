@@ -430,3 +430,68 @@ export const quizAPI = {
     return response.json();
   }
 };
+
+// Enrollment API
+export const enrollmentAPI = {
+  // Get all enrollments with optional status filter
+  getEnrollments: async (status?: string) => {
+    const url = status && status !== 'All' 
+      ? `${API_URL}/enrollments?status=${encodeURIComponent(status)}`
+      : `${API_URL}/enrollments`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch enrollments');
+    }
+
+    return response.json();
+  },
+
+  // Create enrollment
+  createEnrollment: async (data: { courseId: string; userId: string }) => {
+    const response = await fetch(`${API_URL}/enrollments`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create enrollment');
+    }
+
+    return response.json();
+  },
+
+  // Update enrollment progress
+  updateEnrollmentProgress: async (id: string, data: any) => {
+    const response = await fetch(`${API_URL}/enrollments/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update enrollment');
+    }
+
+    return response.json();
+  },
+
+  // Delete enrollment
+  deleteEnrollment: async (id: string) => {
+    const response = await fetch(`${API_URL}/enrollments/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete enrollment');
+    }
+
+    return response.json();
+  }
+};

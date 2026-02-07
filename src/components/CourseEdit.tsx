@@ -28,9 +28,17 @@ const CourseEdit: React.FC = () => {
   // Content form states
   const [showContentForm, setShowContentForm] = useState(false);
   const [contentTitle, setContentTitle] = useState('');
-  const [contentCategory, setContentCategory] = useState<'article' | 'video' | 'infographic' | 'presentation' | 'document' | 'quiz'>('document');
+  const [contentCategory, setContentCategory] = useState<'video' | 'document' | 'image'>('video');
   const [contentDuration, setContentDuration] = useState('');
+  const [contentUrl, setContentUrl] = useState('');
+  const [contentResponsible, setContentResponsible] = useState('');
+  const [contentDescription, setContentDescription] = useState('');
+  const [contentAllowDownload, setContentAllowDownload] = useState(false);
+  const [contentAttachment, setContentAttachment] = useState('');
+  const [contentAttachmentLink, setContentAttachmentLink] = useState('');
+  const [contentModalTab, setContentModalTab] = useState<'content' | 'description' | 'attachment'>('content');
   const [editingContent, setEditingContent] = useState<Content | null>(null);
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   
   // Image upload states
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -153,33 +161,94 @@ const CourseEdit: React.FC = () => {
   };
 
   const handleCreateContent = async () => {
+    if (!contentTitle.trim()) {
+      alert('Please enter content title');
+      return;
+    }
+
+    // Validate based on category
+    if (contentCategory === 'video' && !contentUrl.trim()) {
+      alert('Please enter video link');
+      return;
+    }
+    if (contentCategory === 'video' && !contentDuration) {
+      alert('Please enter video duration');
+      return;
+    }
+
     try {
       await contentAPI.createContent(id!, {
         title: contentTitle,
         category: contentCategory,
-        duration: parseInt(contentDuration) || 0
+        duration: parseInt(contentDuration) || 0,
+        url: contentUrl,
+        videoLink: contentCategory === 'video' ? contentUrl : undefined,
+        fileUrl: contentCategory === 'document' ? contentUrl : undefined,
+        imageUrl: contentCategory === 'image' ? contentUrl : undefined,
+        responsible: contentResponsible,
+        description: contentDescription,
+        allowDownload: contentAllowDownload,
+        attachmentUrl: contentAttachment,
+        attachmentLink: contentAttachmentLink
       });
-      setContentTitle('');
-      setContentDuration('');
+      
+      resetContentForm();
       setShowContentForm(false);
       await fetchContents();
-      await fetchCourseData(); // Refresh to update totals
+      await fetchCourseData();
     } catch (err: any) {
       alert(err.message || 'Failed to create content');
     }
   };
 
+  const resetContentForm = () => {
+    setContentTitle('');
+    setContentCategory('video');
+    setContentDuration('');
+    setContentUrl('');
+    setContentResponsible('');
+    setContentDescription('');
+    setContentAllowDownload(false);
+    setContentAttachment('');
+    setContentAttachmentLink('');
+    setContentModalTab('content');
+  };
+
   const handleUpdateContent = async () => {
     if (!editingContent) return;
+    if (!contentTitle.trim()) {
+      alert('Please enter content title');
+      return;
+    }
+
+    // Validate based on category
+    if (contentCategory === 'video' && !contentUrl.trim()) {
+      alert('Please enter video link');
+      return;
+    }
+    if (contentCategory === 'video' && !contentDuration) {
+      alert('Please enter video duration');
+      return;
+    }
+
     try {
       await contentAPI.updateContent(editingContent._id, {
         title: contentTitle,
         category: contentCategory,
-        duration: parseInt(contentDuration) || 0
+        duration: parseInt(contentDuration) || 0,
+        url: contentUrl,
+        videoLink: contentCategory === 'video' ? contentUrl : undefined,
+        fileUrl: contentCategory === 'document' ? contentUrl : undefined,
+        imageUrl: contentCategory === 'image' ? contentUrl : undefined,
+        responsible: contentResponsible,
+        description: contentDescription,
+        allowDownload: contentAllowDownload,
+        attachmentUrl: contentAttachment,
+        attachmentLink: contentAttachmentLink
       });
+      
+      resetContentForm();
       setEditingContent(null);
-      setContentTitle('');
-      setContentDuration('');
       setShowContentForm(false);
       await fetchContents();
       await fetchCourseData();
@@ -202,9 +271,17 @@ const CourseEdit: React.FC = () => {
   const handleEditContent = (content: Content) => {
     setEditingContent(content);
     setContentTitle(content.title);
-    setContentCategory(content.category);
+    setContentCategory(content.category as 'video' | 'document' | 'image');
     setContentDuration(content.duration.toString());
+    setContentUrl(content.url || '');
+    setContentResponsible(content.responsible || '');
+    setContentDescription(content.description || '');
+    setContentAllowDownload(content.allowDownload || false);
+    setContentAttachment(content.attachmentUrl || '');
+    setContentAttachmentLink(content.attachmentLink || '');
+    setContentModalTab('content');
     setShowContentForm(true);
+    setActiveMenuId(null);
   };
 
   const handleTogglePublish = async () => {
@@ -341,12 +418,71 @@ const CourseEdit: React.FC = () => {
               <div className="content-tab">
                 <div className="content-header">
                   <h3>Course Contents ({contents.length})</h3>
+                </div>
+
+                <table className="content-table">
+                  <thead>
+                    <tr>
+                      <th>Content Title</th>
+                      <th>Category</th>
+                      <th style={{ width: '50px' }}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {contents.length === 0 ? (
+                      <tr>
+                        <td colSpan={3} className="no-content">
+                          No content added yet. Click "Add Content" to start.
+                        </td>
+                      </tr>
+                    ) : (
+                      contents.map((content) => (
+                        <tr key={content._id}>
+                          <td>{content.title}</td>
+                          <td>
+                            <span className="category-badge">{content.category}</span>
+                          </td>
+                          <td>
+                            <div className="menu-container">
+                              <button
+                                className="menu-trigger"
+                                onClick={() => setActiveMenuId(activeMenuId === content._id ? null : content._id)}
+                              >
+                                ⋮
+                              </button>
+                              {activeMenuId === content._id && (
+                                <div className="dropdown-menu">
+                                  <button
+                                    className="menu-item"
+                                    onClick={() => handleEditContent(content)}
+                                  >
+                                    ✎ Edit
+                                  </button>
+                                  <button
+                                    className="menu-item delete"
+                                    onClick={() => {
+                                      setActiveMenuId(null);
+                                      handleDeleteContent(content._id);
+                                    }}
+                                  >
+                                    🗑 Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+
+                <div className="add-content-section">
                   <button
-                    className="add-content-btn"
+                    className="add-content-btn-centered"
                     onClick={() => {
+                      resetContentForm();
                       setEditingContent(null);
-                      setContentTitle('');
-                      setContentDuration('');
                       setShowContentForm(true);
                     }}
                   >
@@ -355,107 +491,275 @@ const CourseEdit: React.FC = () => {
                 </div>
 
                 {showContentForm && (
-                  <div className="content-form">
-                    <div className="form-group">
-                      <label>Content Title</label>
-                      <input
-                        type="text"
-                        value={contentTitle}
-                        onChange={(e) => setContentTitle(e.target.value)}
-                        placeholder="Enter content title"
-                      />
-                    </div>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Category</label>
-                        <select
-                          value={contentCategory}
-                          onChange={(e) => setContentCategory(e.target.value as any)}
+                  <div className="modal-overlay" onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                      setShowContentForm(false);
+                      setEditingContent(null);
+                      resetContentForm();
+                    }
+                  }}>
+                    <div className="content-modal">
+                      <div className="modal-header">
+                        <h3>{editingContent ? 'Edit Content' : 'Add Content'}</h3>
+                        <button
+                          className="close-btn"
+                          onClick={() => {
+                            setShowContentForm(false);
+                            setEditingContent(null);
+                            resetContentForm();
+                          }}
                         >
-                          <option value="Document">Document</option>
-                          <option value="Video">Video</option>
-                          <option value="Quiz">Quiz</option>
-                          <option value="Article">Article</option>
-                          <option value="Other">Other</option>
-                        </select>
+                          ×
+                        </button>
                       </div>
-                      <div className="form-group">
-                        <label>Duration (minutes)</label>
-                        <input
-                          type="number"
-                          value={contentDuration}
-                          onChange={(e) => setContentDuration(e.target.value)}
-                          placeholder="0"
-                        />
+
+                      {/* Internal Tabs */}
+                      <div className="modal-tabs">
+                        <button
+                          className={`modal-tab ${contentModalTab === 'content' ? 'active' : ''}`}
+                          onClick={() => setContentModalTab('content')}
+                        >
+                          Content
+                        </button>
+                        <button
+                          className={`modal-tab ${contentModalTab === 'description' ? 'active' : ''}`}
+                          onClick={() => setContentModalTab('description')}
+                        >
+                          Description
+                        </button>
+                        <button
+                          className={`modal-tab ${contentModalTab === 'attachment' ? 'active' : ''}`}
+                          onClick={() => setContentModalTab('attachment')}
+                        >
+                          Additional Attachment
+                        </button>
                       </div>
-                    </div>
-                    <div className="form-actions">
-                      <button
-                        className="btn-primary"
-                        onClick={editingContent ? handleUpdateContent : handleCreateContent}
-                      >
-                        {editingContent ? 'Update' : 'Create'}
-                      </button>
-                      <button
-                        className="btn-secondary"
-                        onClick={() => {
-                          setShowContentForm(false);
-                          setEditingContent(null);
-                          setContentTitle('');
-                          setContentDuration('');
-                        }}
-                      >
-                        Cancel
-                      </button>
+
+                      <div className="modal-body">
+                        {contentModalTab === 'content' && (
+                          <>
+                            <div className="form-group">
+                              <label>Content Title *</label>
+                              <input
+                                type="text"
+                                value={contentTitle}
+                                onChange={(e) => setContentTitle(e.target.value)}
+                                placeholder="Enter content title"
+                              />
+                            </div>
+
+                            <div className="form-group">
+                              <label>Category *</label>
+                              <div className="radio-group">
+                                <label className="radio-label">
+                                  <input
+                                    type="radio"
+                                    name="category"
+                                    value="video"
+                                    checked={contentCategory === 'video'}
+                                    onChange={(e) => setContentCategory(e.target.value as any)}
+                                  />
+                                  <span>Video</span>
+                                </label>
+                                <label className="radio-label">
+                                  <input
+                                    type="radio"
+                                    name="category"
+                                    value="document"
+                                    checked={contentCategory === 'document'}
+                                    onChange={(e) => setContentCategory(e.target.value as any)}
+                                  />
+                                  <span>Document</span>
+                                </label>
+                                <label className="radio-label">
+                                  <input
+                                    type="radio"
+                                    name="category"
+                                    value="image"
+                                    checked={contentCategory === 'image'}
+                                    onChange={(e) => setContentCategory(e.target.value as any)}
+                                  />
+                                  <span>Image</span>
+                                </label>
+                              </div>
+                            </div>
+
+                            {/* Video Fields */}
+                            {contentCategory === 'video' && (
+                              <>
+                                <div className="form-group">
+                                  <label>Video Link *</label>
+                                  <input
+                                    type="url"
+                                    value={contentUrl}
+                                    onChange={(e) => setContentUrl(e.target.value)}
+                                    placeholder="https://youtube.com/watch?v=..."
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label>Duration (in minutes) *</label>
+                                  <input
+                                    type="number"
+                                    value={contentDuration}
+                                    onChange={(e) => setContentDuration(e.target.value)}
+                                    placeholder="e.g., 15"
+                                    min="0"
+                                  />
+                                  <small>Enter duration in minutes</small>
+                                </div>
+                              </>
+                            )}
+
+                            {/* Document Fields */}
+                            {contentCategory === 'document' && (
+                              <>
+                                <div className="form-group">
+                                  <label>Document File *</label>
+                                  <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,.txt"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        // For now, store filename; in production, upload to server
+                                        setContentUrl(file.name);
+                                      }
+                                    }}
+                                  />
+                                  {contentUrl && <small className="file-name">Selected: {contentUrl}</small>}
+                                </div>
+                                <div className="form-group">
+                                  <label className="checkbox-label">
+                                    <input
+                                      type="checkbox"
+                                      checked={contentAllowDownload}
+                                      onChange={(e) => setContentAllowDownload(e.target.checked)}
+                                    />
+                                    <span>Allow Download</span>
+                                  </label>
+                                </div>
+                              </>
+                            )}
+
+                            {/* Image Fields */}
+                            {contentCategory === 'image' && (
+                              <>
+                                <div className="form-group">
+                                  <label>Image File *</label>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        // For now, store filename; in production, upload to server
+                                        setContentUrl(file.name);
+                                      }
+                                    }}
+                                  />
+                                  {contentUrl && <small className="file-name">Selected: {contentUrl}</small>}
+                                </div>
+                                <div className="form-group">
+                                  <label className="checkbox-label">
+                                    <input
+                                      type="checkbox"
+                                      checked={contentAllowDownload}
+                                      onChange={(e) => setContentAllowDownload(e.target.checked)}
+                                    />
+                                    <span>Allow Download</span>
+                                  </label>
+                                </div>
+                              </>
+                            )}
+
+                            <div className="form-group">
+                              <label>Responsible</label>
+                              <input
+                                type="text"
+                                value={contentResponsible}
+                                onChange={(e) => setContentResponsible(e.target.value)}
+                                placeholder="Enter responsible person/team"
+                              />
+                            </div>
+                          </>
+                        )}
+
+                        {contentModalTab === 'description' && (
+                          <div className="description-tab-content">
+                            <textarea
+                              className="description-textarea"
+                              value={contentDescription}
+                              onChange={(e) => setContentDescription(e.target.value)}
+                              placeholder="Write your content description here..."
+                              rows={12}
+                            />
+                          </div>
+                        )}
+
+                        {contentModalTab === 'attachment' && (
+                          <div className="attachment-tab-content">
+                            <div className="form-group">
+                              <label>File</label>
+                              <div className="file-upload-wrapper">
+                                <input
+                                  type="file"
+                                  id="attachment-file-input"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      setContentAttachment(file.name);
+                                    }
+                                  }}
+                                  style={{ display: 'none' }}
+                                />
+                                <button
+                                  type="button"
+                                  className="upload-file-btn"
+                                  onClick={() => document.getElementById('attachment-file-input')?.click()}
+                                >
+                                  📎 Upload your file
+                                </button>
+                                {contentAttachment && (
+                                  <span className="uploaded-file-name">{contentAttachment}</span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="form-group">
+                              <label>Link</label>
+                              <input
+                                type="url"
+                                className="link-input"
+                                value={contentAttachmentLink}
+                                onChange={(e) => setContentAttachmentLink(e.target.value)}
+                                placeholder="e.g., www.google.com"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="modal-footer">
+                        <button
+                          className="btn-secondary"
+                          onClick={() => {
+                            setShowContentForm(false);
+                            setEditingContent(null);
+                            resetContentForm();
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="btn-primary"
+                          onClick={editingContent ? handleUpdateContent : handleCreateContent}
+                        >
+                          {editingContent ? 'Update' : 'Save'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
-
-                <table className="content-table">
-                  <thead>
-                    <tr>
-                      <th>Title</th>
-                      <th>Category</th>
-                      <th>Duration</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {contents.length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="no-content">
-                          No content added yet. Click "Add Content" to start.
-                        </td>
-                      </tr>
-                    ) : (
-                      contents.map((content) => (
-                        <tr key={content._id}>
-                          <td>{content.title}</td>
-                          <td>{content.category}</td>
-                          <td>{content.duration} min</td>
-                          <td>
-                            <div className="actions">
-                              <button
-                                className="action-icon"
-                                onClick={() => handleEditContent(content)}
-                                title="Edit"
-                              >
-                                ✎
-                              </button>
-                              <button
-                                className="action-icon delete"
-                                onClick={() => handleDeleteContent(content._id)}
-                                title="Delete"
-                              >
-                                🗑
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
               </div>
             )}
 
