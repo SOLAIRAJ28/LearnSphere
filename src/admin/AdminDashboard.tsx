@@ -2,14 +2,14 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Course, ViewMode } from '../types/course';
 import { courseAPI } from '../services/api';
-import Header from './Header';
+import AdminHeader from './AdminHeader';
 import SearchAndControls from './SearchAndControls';
 import CourseCard from './CourseCard';
 import CourseList from './CourseList';
 import CreateCourseModal from './CreateCourseModal';
 import Reporting from './Reporting';
 
-const Dashboard: React.FC = () => {
+const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +89,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard">
-      <Header activeTab={activeTab} onTabChange={setActiveTab} />
+      <AdminHeader activeTab={activeTab} onTabChange={setActiveTab} />
       
       {activeTab === 'Courses' && (
         <main className="dashboard-content">
@@ -149,4 +149,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default AdminDashboard;

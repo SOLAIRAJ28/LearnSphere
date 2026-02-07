@@ -1,0 +1,75 @@
+/* Logout Button Styles */
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+/* Header variant - used in navigation bar */
+.logout-header {
+  color: #ef4444;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.logout-header:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+/* Dropdown variant - used in profile dropdown */
+.logout-dropdown {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 10px 16px;
+  color: #ef4444;
+  background: transparent;
+  text-align: left;
+}
+
+.logout-dropdown:hover {
+  background: #fef2f2;
+}
+
+.logout-dropdown .logout-icon {
+  font-size: 16px;
+}
+
+/* Button variant - standalone button */
+.logout-button {
+  color: white;
+  background: #ef4444;
+  padding: 10px 20px;
+  font-size: 15px;
+}
+
+.logout-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.logout-button:active {
+  transform: translateY(0);
+}
+
+/* Accessibility */
+.logout-btn:focus {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+
+.logout-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

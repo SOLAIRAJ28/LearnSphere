@@ -31,8 +31,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'user'],
-      default: 'user'
+      enum: ['admin', 'participant'],
+      default: 'participant'
     },
     totalPoints: {
       type: Number,
