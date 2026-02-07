@@ -142,6 +142,37 @@ const AdminDashboard: React.FC = () => {
       
       {activeTab === 'Courses' && (
         <main className="dashboard-content">
+          <div className="page-header-section">
+            <h1 className="page-title">Kongu Engineering College</h1>
+            <p className="page-subtitle">Digital Learning Management System for Academic Excellence and Innovation</p>
+            
+            <div className="feature-cards">
+              <div className="feature-card feature-card-organize">
+                <div className="feature-badge">DEPARTMENTS</div>
+                <h3 className="feature-title">Multi-Department</h3>
+                <p className="feature-text">Manage courses across CSE, ECE, Mechanical, Civil, and all engineering departments</p>
+              </div>
+              
+              <div className="feature-card feature-card-content">
+                <div className="feature-badge">CURRICULUM</div>
+                <h3 className="feature-title">Academic Programs</h3>
+                <p className="feature-text">Comprehensive courses aligned with Anna University syllabus and industry standards</p>
+              </div>
+              
+              <div className="feature-card feature-card-track">
+                <div className="feature-badge">ASSESSMENT</div>
+                <h3 className="feature-title">Student Evaluation</h3>
+                <p className="feature-text">Track student performance, attendance, and academic progress with detailed reports</p>
+              </div>
+              
+              <div className="feature-card feature-card-privacy">
+                <div className="feature-badge">ACCREDITED</div>
+                <h3 className="feature-title">Quality Education</h3>
+                <p className="feature-text">NAAC A+ accredited institution committed to excellence in technical education</p>
+              </div>
+            </div>
+          </div>
+          
           <SearchAndControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -222,6 +253,28 @@ const AdminDashboard: React.FC = () => {
           <p>Application settings</p>
         </div>
       )}
+      
+      <footer className="app-footer">
+        <div className="footer-content">
+          <div className="footer-section">
+            <h3>Kongu Engineering College</h3>
+            <p>Perundurai, Erode - 638 060, Tamil Nadu, India</p>
+          </div>
+          <div className="footer-section">
+            <h4>Contact</h4>
+            <p>Phone: +91-4294-226602</p>
+            <p>Email: principal@kongu.edu</p>
+          </div>
+          <div className="footer-section">
+            <h4>Quick Links</h4>
+            <p>NAAC A+ Accredited</p>
+            <p>Autonomous Institution</p>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; 2026 Kongu Engineering College. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };
