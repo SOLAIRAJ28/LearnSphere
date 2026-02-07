@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import type { Course, Content } from '../types/course';
 import { courseAPI, contentAPI } from '../services/api';
 import Header from './Header';
+import QuizManager from './QuizManager';
 import '../styles/CourseEdit.css';
 
 type TabType = 'content' | 'description' | 'options' | 'quiz';
@@ -510,10 +511,7 @@ const CourseEdit: React.FC = () => {
 
             {activeTab === 'quiz' && (
               <div className="quiz-tab">
-                <div className="placeholder">
-                  <h3>Quiz Section</h3>
-                  <p>Quiz functionality will be added here.</p>
-                </div>
+                <QuizManager courseId={id!} />
               </div>
             )}
           </div>

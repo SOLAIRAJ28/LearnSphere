@@ -293,3 +293,140 @@ export const authAPI = {
     return response.json();
   }
 };
+
+// Quiz API
+export const quizAPI = {
+  // Get all quizzes for a course
+  getCourseQuizzes: async (courseId: string) => {
+    const response = await fetch(`${API_URL}/courses/${courseId}/quizzes`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch quizzes');
+    }
+
+    return response.json();
+  },
+
+  // Get single quiz
+  getQuiz: async (quizId: string) => {
+    const response = await fetch(`${API_URL}/quizzes/${quizId}`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch quiz');
+    }
+
+    return response.json();
+  },
+
+  // Create quiz
+  createQuiz: async (courseId: string, data: { title: string }) => {
+    const response = await fetch(`${API_URL}/courses/${courseId}/quizzes`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to create quiz');
+    }
+
+    return response.json();
+  },
+
+  // Update quiz
+  updateQuiz: async (quizId: string, data: { title: string }) => {
+    const response = await fetch(`${API_URL}/quizzes/${quizId}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update quiz');
+    }
+
+    return response.json();
+  },
+
+  // Delete quiz
+  deleteQuiz: async (quizId: string) => {
+    const response = await fetch(`${API_URL}/quizzes/${quizId}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete quiz');
+    }
+
+    return response.json();
+  },
+
+  // Add question to quiz
+  addQuestion: async (quizId: string, data: { questionText: string; options: { text: string; isCorrect: boolean }[] }) => {
+    const response = await fetch(`${API_URL}/quizzes/${quizId}/questions`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to add question');
+    }
+
+    return response.json();
+  },
+
+  // Update question
+  updateQuestion: async (quizId: string, questionId: string, data: { questionText: string; options: { text: string; isCorrect: boolean }[] }) => {
+    const response = await fetch(`${API_URL}/quizzes/${quizId}/questions/${questionId}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to update question');
+    }
+
+    return response.json();
+  },
+
+  // Delete question
+  deleteQuestion: async (quizId: string, questionId: string) => {
+    const response = await fetch(`${API_URL}/quizzes/${quizId}/questions/${questionId}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete question');
+    }
+
+    return response.json();
+  },
+
+  // Update rewards
+  updateRewards: async (quizId: string, rewards: { correctPoints: number; wrongPoints: number; completionPoints: number }) => {
+    const response = await fetch(`${API_URL}/quizzes/${quizId}/rewards`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(rewards)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update rewards');
+    }
+
+    return response.json();
+  }
+};
