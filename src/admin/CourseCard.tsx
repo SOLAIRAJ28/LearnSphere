@@ -21,19 +21,17 @@ const CourseCard: React.FC<CourseCardProps> = ({
   hasVideo = false,
 }) => {
   const imageUrl = course.imageUrl 
-    ? (course.imageUrl.startsWith('http') ? course.imageUrl : `http://localhost:5000${course.imageUrl}`)
+    ? (course.imageUrl.startsWith('http') ? course.imageUrl : `${course.imageUrl}`)
     : '';
 
   return (
     <div className="course-card">
       {course.isPublished && <div className="published-badge">Published</div>}
-      
       {imageUrl && (
         <div className="course-image">
           <img src={imageUrl} alt={course.title} />
         </div>
       )}
-      
       <div className="course-content">
         <h3 className="course-title">{course.title}</h3>
         
@@ -82,12 +80,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
               ▶ Play Video
             </button>
           )}
-          <button
-            className="action-btn view-btn"
-            onClick={() => onView(course._id)}
-          >
-            View
-          </button>
           <button
             className="action-btn share-btn"
             onClick={() => onShare(course._id)}

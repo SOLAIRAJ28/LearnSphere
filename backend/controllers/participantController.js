@@ -1,4 +1,5 @@
 import Course from '../models/Course.js';
+import Content from '../models/Content.js';
 import Enrollment from '../models/Enrollment.js';
 import User from '../models/User.js';
 
@@ -185,8 +186,18 @@ export const enrollInCourse = async (req, res) => {
       courseId,
       userId,
       status: 'Yet to Start',
-      isPaid: false
+      isPaid: false,
+      enrolledAt: new Date(),
+      completionPercentage: 0,
+      timeSpent: 0
     });
+
+    // Ensure user has totalPoints field initialized
+    await User.findByIdAndUpdate(
+      userId, 
+      { $setOnInsert: { totalPoints: 0 } }, 
+      { upsert: false }
+    );
 
     res.status(201).json({
       success: true,
@@ -259,8 +270,18 @@ export const processCoursePayment = async (req, res) => {
         status: 'Yet to Start',
         isPaid: true,
         paymentId,
-        amountPaid: amountPaid || course.price
+        amountPaid: amountPaid || course.price,
+        enrolledAt: new Date(),
+        completionPercentage: 0,
+        timeSpent: 0
       });
+      
+      // Ensure user has totalPoints field initialized
+      await User.findByIdAndUpdate(
+        userId, 
+        { $setOnInsert: { totalPoints: 0 } }, 
+        { upsert: false }
+      );
     }
 
     res.status(200).json({
@@ -295,30 +316,29 @@ export const updateCourseProgress = async (req, res) => {
       });
     }
 
-    // Update status
-    if (status) {
-      enrollment.status = status;
-      
-      // Update timestamps based on status
-      if (status === 'In Progress' && !enrollment.startedAt) {
-        enrollment.startedAt = new Date();
-      }
-      
-      if (status === 'Completed' && !enrollment.completedAt) {
-        enrollment.completedAt = new Date();
-        
-        // Award points for completion (e.g., 10 points per course)
-        await User.findByIdAndUpdate(userId, {
-          $inc: { totalPoints: 10 }
-        });
-      }
+    // Update enrollment progress
+    const oldStatus = enrollment.status;
+    enrollment.status = status || enrollment.status;
+    enrollment.completionPercentage = completionPercentage || enrollment.completionPercentage;
+    
+    // Set started date if starting for first time
+    if (status === 'In Progress' && !enrollment.startedAt) {
+      enrollment.startedAt = new Date();
     }
-
-    // Update completion percentage
-    if (completionPercentage !== undefined) {
-      enrollment.completionPercentage = completionPercentage;
+    
+    // Set completed date and award points if completing
+    if (status === 'Completed' && oldStatus !== 'Completed') {
+      enrollment.completedAt = new Date();
+      enrollment.completionPercentage = 100;
+      
+      // Award points for completion
+      const pointsToAward = 20; // 20 points per course completion
+      await User.findByIdAndUpdate(
+        userId,
+        { $inc: { totalPoints: pointsToAward } }
+      );
     }
-
+    
     await enrollment.save();
 
     res.status(200).json({
@@ -327,10 +347,184 @@ export const updateCourseProgress = async (req, res) => {
       data: enrollment
     });
   } catch (error) {
-    console.error('Error updating progress:', error);
+    console.error('Error updating course progress:', error);
     res.status(500).json({
       success: false,
       message: 'Server error while updating progress',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Mark a content item as completed and recalculate progress
+// @route   PUT /api/participant/courses/:id/complete-content
+// @access  Public (will be protected later)
+export const markContentComplete = async (req, res) => {
+  try {
+    const { id: courseId } = req.params;
+    const { userId, contentId } = req.body;
+
+    const enrollment = await Enrollment.findOne({ courseId, userId });
+
+    if (!enrollment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Enrollment not found'
+      });
+    }
+
+    // Check if content already completed
+    const alreadyCompleted = enrollment.completedContents.some(
+      (id) => id.toString() === contentId
+    );
+
+    if (!alreadyCompleted) {
+      enrollment.completedContents.push(contentId);
+    }
+
+    // Get total content count for this course
+    const totalContents = await Content.countDocuments({ courseId });
+
+    // Calculate progress: videos/content = 95%, quiz = 5%
+    const contentProgress = totalContents > 0
+      ? (enrollment.completedContents.length / totalContents) * 95
+      : 0;
+
+    const quizProgress = enrollment.quizCompleted ? 5 : 0;
+    const totalProgress = Math.min(Math.round(contentProgress + quizProgress), 100);
+
+    enrollment.completionPercentage = totalProgress;
+
+    // Update status based on progress
+    if (totalProgress === 0) {
+      enrollment.status = 'Yet to Start';
+    } else if (totalProgress >= 100) {
+      enrollment.status = 'Completed';
+      if (!enrollment.completedAt) {
+        enrollment.completedAt = new Date();
+        // Award points for completion
+        await User.findByIdAndUpdate(userId, { $inc: { totalPoints: 20 } });
+      }
+    } else {
+      enrollment.status = 'In Progress';
+      if (!enrollment.startedAt) {
+        enrollment.startedAt = new Date();
+      }
+    }
+
+    await enrollment.save();
+
+    res.status(200).json({
+      success: true,
+      message: alreadyCompleted ? 'Content already completed' : 'Content marked as completed',
+      data: {
+        completedContents: enrollment.completedContents,
+        completionPercentage: enrollment.completionPercentage,
+        status: enrollment.status,
+        quizCompleted: enrollment.quizCompleted
+      }
+    });
+  } catch (error) {
+    console.error('Error marking content complete:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Mark quiz as completed and add 5% to progress
+// @route   PUT /api/participant/courses/:id/complete-quiz
+// @access  Public (will be protected later)
+export const completeQuiz = async (req, res) => {
+  try {
+    const { id: courseId } = req.params;
+    const { userId } = req.body;
+
+    const enrollment = await Enrollment.findOne({ courseId, userId });
+
+    if (!enrollment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Enrollment not found'
+      });
+    }
+
+    enrollment.quizCompleted = true;
+
+    // Recalculate progress
+    const totalContents = await Content.countDocuments({ courseId });
+    const contentProgress = totalContents > 0
+      ? (enrollment.completedContents.length / totalContents) * 95
+      : 0;
+    const totalProgress = Math.min(Math.round(contentProgress + 5), 100);
+
+    enrollment.completionPercentage = totalProgress;
+
+    if (totalProgress >= 100) {
+      enrollment.status = 'Completed';
+      if (!enrollment.completedAt) {
+        enrollment.completedAt = new Date();
+        await User.findByIdAndUpdate(userId, { $inc: { totalPoints: 20 } });
+      }
+    }
+
+    await enrollment.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Quiz completed successfully',
+      data: {
+        completedContents: enrollment.completedContents,
+        completionPercentage: enrollment.completionPercentage,
+        status: enrollment.status,
+        quizCompleted: enrollment.quizCompleted
+      }
+    });
+  } catch (error) {
+    console.error('Error completing quiz:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get enrollment progress details (completed contents, percentage, etc.)
+// @route   GET /api/participant/courses/:id/progress/:userId
+// @access  Public (will be protected later)
+export const getEnrollmentProgress = async (req, res) => {
+  try {
+    const { id: courseId, userId } = req.params;
+
+    const enrollment = await Enrollment.findOne({ courseId, userId });
+
+    if (!enrollment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Enrollment not found'
+      });
+    }
+
+    const totalContents = await Content.countDocuments({ courseId });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        completedContents: enrollment.completedContents,
+        completionPercentage: enrollment.completionPercentage,
+        status: enrollment.status,
+        quizCompleted: enrollment.quizCompleted,
+        totalContents
+      }
+    });
+  } catch (error) {
+    console.error('Error getting progress:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
       error: error.message
     });
   }

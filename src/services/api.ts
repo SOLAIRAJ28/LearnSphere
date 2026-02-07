@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Get token from localStorage
 const getAuthToken = () => {
@@ -255,6 +255,25 @@ export const contentAPI = {
       throw new Error('Failed to reorder contents');
     }
     
+    return response.json();
+  },
+
+  // Upload document/file content
+  uploadDocumentContent: async (courseId: string, formData: FormData) => {
+    const token = getAuthToken();
+    const response = await fetch(`${API_URL}/courses/${courseId}/contents/upload-document`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` })
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.message || 'Failed to upload document');
+    }
+
     return response.json();
   },
 
@@ -738,6 +757,49 @@ export const participantAPI = {
 
     if (!response.ok) {
       throw new Error('Failed to update progress');
+    }
+
+    return response.json();
+  },
+
+  // Mark a content item as completed
+  markContentComplete: async (courseId: string, userId: string, contentId: string) => {
+    const response = await fetch(`${API_URL}/participant/courses/${courseId}/complete-content`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ userId, contentId })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark content as complete');
+    }
+
+    return response.json();
+  },
+
+  // Mark quiz as completed
+  completeQuiz: async (courseId: string, userId: string) => {
+    const response = await fetch(`${API_URL}/participant/courses/${courseId}/complete-quiz`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ userId })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to complete quiz');
+    }
+
+    return response.json();
+  },
+
+  // Get enrollment progress details
+  getProgress: async (courseId: string, userId: string) => {
+    const response = await fetch(`${API_URL}/participant/courses/${courseId}/progress/${userId}`, {
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get progress');
     }
 
     return response.json();

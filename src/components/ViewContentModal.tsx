@@ -110,7 +110,7 @@ const ViewContentModal: React.FC<ViewContentModalProps> = ({
   const getContentUrl = (content: Content) => {
     // For uploaded videos, use the streaming API
     if (content.videoFileId) {
-      return `http://localhost:5000/api/video/${content.videoFileId}`;
+      return `/api/video/${content.videoFileId}`;
     }
     
     const url = content.videoLink || content.fileUrl || content.imageUrl || content.url;
@@ -267,7 +267,7 @@ const ViewContentModal: React.FC<ViewContentModalProps> = ({
                             )}
                           </div>
                           <div className="content-actions">
-                            {content.category === 'video' && (
+                            {content.category?.toLowerCase() === 'video' && (
                               <button
                                 className="content-link-btn"
                                 onClick={() => setSelectedVideo(content)}
@@ -278,6 +278,54 @@ const ViewContentModal: React.FC<ViewContentModalProps> = ({
                                 }}
                               >
                                 ▶️ Play Video
+                              </button>
+                            )}
+                            {content.category?.toLowerCase() !== 'video' && getContentUrl(content) && (
+                              <button
+                                className="content-link-btn"
+                                onClick={() => {
+                                  const link = getContentUrl(content);
+                                  if (link) {
+                                    window.open(link, '_blank');
+                                  }
+                                }}
+                                style={{
+                                  background: 'linear-gradient(135deg, #5352ed 0%, #3742fa 100%)',
+                                  color: 'white',
+                                  border: 'none'
+                                }}
+                              >
+                                📄 Open
+                              </button>
+                            )}
+                            {content.attachmentUrl && (
+                              <button
+                                className="content-link-btn"
+                                onClick={() => {
+                                  window.open(content.attachmentUrl!, '_blank');
+                                }}
+                                style={{
+                                  background: 'linear-gradient(135deg, #20bf6b 0%, #0fb9b1 100%)',
+                                  color: 'white',
+                                  border: 'none'
+                                }}
+                              >
+                                📎 Attachment
+                              </button>
+                            )}
+                            {content.attachmentLink && (
+                              <button
+                                className="content-link-btn"
+                                onClick={() => {
+                                  window.open(content.attachmentLink!, '_blank');
+                                }}
+                                style={{
+                                  background: 'linear-gradient(135deg, #f79f1f 0%, #f0932b 100%)',
+                                  color: 'white',
+                                  border: 'none'
+                                }}
+                              >
+                                🔗 Link
                               </button>
                             )}
                             {content.allowDownload && content.fileUrl && (

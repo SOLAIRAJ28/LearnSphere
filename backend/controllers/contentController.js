@@ -468,3 +468,71 @@ export const streamVideo = async (req, res) => {
     });
   }
 };
+
+// @desc    Upload a document/file for content
+// @route   POST /api/courses/:courseId/contents/upload-document
+// @access  Public
+export const uploadDocumentContent = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+
+    const { title, category, duration, description, allowDownload } = req.body;
+
+    // Check if course exists
+    const course = await Course.findById(req.params.courseId);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found'
+      });
+    }
+
+    // Get the next order number
+    const maxOrder = await Content.findOne({ courseId: req.params.courseId })
+      .sort({ order: -1 })
+      .select('order');
+    const nextOrder = maxOrder ? maxOrder.order + 1 : 0;
+
+    const fileUrl = `/uploads/documents/${req.file.filename}`;
+
+    const content = await Content.create({
+      courseId: req.params.courseId,
+      title: title || req.file.originalname,
+      category: category || 'document',
+      duration: duration || 0,
+      order: nextOrder,
+      url: fileUrl,
+      fileUrl: fileUrl,
+      description: description || '',
+      allowDownload: allowDownload === 'true' || allowDownload === true
+    });
+
+    // Update course lessons count and duration
+    const totalContents = await Content.countDocuments({ courseId: req.params.courseId });
+    const totalDuration = await Content.aggregate([
+      { $match: { courseId: course._id } },
+      { $group: { _id: null, total: { $sum: '$duration' } } }
+    ]);
+
+    course.lessonsCount = totalContents;
+    course.totalDuration = totalDuration.length > 0 ? totalDuration[0].total : 0;
+    await course.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Document uploaded successfully',
+      data: content
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading document',
+      error: error.message
+    });
+  }
+};

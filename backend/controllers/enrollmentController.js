@@ -16,7 +16,7 @@ export const getEnrollments = async (req, res) => {
     // Get enrollments with populated course and user data
     const enrollments = await Enrollment.find(filter)
       .populate('courseId', 'title')
-      .populate('userId', 'username name email')
+      .populate('userId', 'username name email totalPoints')
       .sort({ enrolledAt: -1 });
 
     // Calculate summary statistics
@@ -62,12 +62,23 @@ export const createEnrollment = async (req, res) => {
     const enrollment = await Enrollment.create({
       courseId,
       userId,
-      enrolledAt: new Date()
+      enrolledAt: new Date(),
+      status: 'Yet to Start',
+      completionPercentage: 0,
+      timeSpent: 0,
+      isPaid: false
     });
+
+    // Ensure user has totalPoints field initialized
+    await User.findByIdAndUpdate(
+      userId, 
+      { $setOnInsert: { totalPoints: 0 } }, 
+      { upsert: false }
+    );
 
     const populatedEnrollment = await Enrollment.findById(enrollment._id)
       .populate('courseId', 'title')
-      .populate('userId', 'name email');
+      .populate('userId', 'name email totalPoints');
 
     res.status(201).json({
       success: true,

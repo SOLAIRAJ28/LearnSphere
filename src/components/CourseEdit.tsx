@@ -45,7 +45,6 @@ const CourseEdit: React.FC = () => {
   const [contentAttachmentLink, setContentAttachmentLink] = useState('');
   const [contentModalTab, setContentModalTab] = useState<'content' | 'description' | 'attachment'>('content');
   const [editingContent, setEditingContent] = useState<Content | null>(null);
-  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   
   // Image upload states
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -54,6 +53,7 @@ const CourseEdit: React.FC = () => {
 
   // Video upload states
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
 
@@ -105,7 +105,7 @@ const CourseEdit: React.FC = () => {
       if (courseData.imageUrl) {
         const fullImageUrl = courseData.imageUrl.startsWith('http') 
           ? courseData.imageUrl 
-          : `http://localhost:5000${courseData.imageUrl}`;
+          : `${courseData.imageUrl}`;
         setImagePreview(fullImageUrl);
       }
       setImageUrl(courseData.imageUrl || '');
@@ -165,7 +165,7 @@ const CourseEdit: React.FC = () => {
       // Update course data with new image URL
       const fullImageUrl = response.data.imageUrl.startsWith('http')
         ? response.data.imageUrl
-        : `http://localhost:5000${response.data.imageUrl}`;
+        : `${response.data.imageUrl}`;
       
       setImageUrl(response.data.imageUrl);
       setImagePreview(fullImageUrl);
@@ -265,6 +265,17 @@ const CourseEdit: React.FC = () => {
         });
 
         setUploadingVideo(false);
+      } else if ((contentCategory === 'document' || contentCategory === 'image') && documentFile) {
+        // Upload document/image file
+        const formData = new FormData();
+        formData.append('file', documentFile);
+        formData.append('title', contentTitle);
+        formData.append('category', contentCategory);
+        formData.append('duration', contentDuration || '0');
+        formData.append('description', contentDescription);
+        formData.append('allowDownload', String(contentAllowDownload));
+
+        await contentAPI.uploadDocumentContent(id!, formData);
       } else {
         // Handle other content types (document, image)
         await contentAPI.createContent(id!, {
@@ -305,6 +316,7 @@ const CourseEdit: React.FC = () => {
     setContentAttachmentLink('');
     setContentModalTab('content');
     setVideoFile(null);
+    setDocumentFile(null);
     setUploadingVideo(false);
     setUploadProgress(0);
   };
@@ -376,7 +388,6 @@ const CourseEdit: React.FC = () => {
     setContentAttachmentLink(content.attachmentLink || '');
     setContentModalTab('content');
     setShowContentForm(true);
-    setActiveMenuId(null);
   };
 
   if (loading) return <div className="loading">Loading course...</div>;
@@ -547,32 +558,19 @@ const CourseEdit: React.FC = () => {
                             <span className="category-badge">{content.category}</span>
                           </td>
                           <td>
-                            <div className="menu-container">
+                            <div className="content-actions">
                               <button
-                                className="menu-trigger"
-                                onClick={() => setActiveMenuId(activeMenuId === content._id ? null : content._id)}
+                                className="content-edit-btn"
+                                onClick={() => handleEditContent(content)}
                               >
-                                ⋮
+                                ✎ Edit
                               </button>
-                              {activeMenuId === content._id && (
-                                <div className="dropdown-menu">
-                                  <button
-                                    className="menu-item"
-                                    onClick={() => handleEditContent(content)}
-                                  >
-                                    ✎ Edit
-                                  </button>
-                                  <button
-                                    className="menu-item delete"
-                                    onClick={() => {
-                                      setActiveMenuId(null);
-                                      handleDeleteContent(content._id);
-                                    }}
-                                  >
-                                    🗑 Delete
-                                  </button>
-                                </div>
-                              )}
+                              <button
+                                className="content-delete-btn"
+                                onClick={() => handleDeleteContent(content._id)}
+                              >
+                                🗑 Delete
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -770,8 +768,23 @@ const CourseEdit: React.FC = () => {
                                     placeholder="Document URL or filename (e.g., course-notes.pdf)"
                                   />
                                   <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                                    For local PDFs: Put file in <strong>public</strong> folder and enter filename only
+                                    Enter a URL, or upload a file below
                                   </small>
+                                </div>
+                                <div className="form-group">
+                                  <label>Or Upload File</label>
+                                  <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,.txt"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        setDocumentFile(file);
+                                        setContentUrl(file.name);
+                                      }
+                                    }}
+                                  />
+                                  {documentFile && <small className="file-name">Selected: {documentFile.name}</small>}
                                 </div>
                                 <div className="form-group">
                                   <label className="checkbox-label">
@@ -797,7 +810,7 @@ const CourseEdit: React.FC = () => {
                                     onChange={(e) => {
                                       const file = e.target.files?.[0];
                                       if (file) {
-                                        // For now, store filename; in production, upload to server
+                                        setDocumentFile(file);
                                         setContentUrl(file.name);
                                       }
                                     }}

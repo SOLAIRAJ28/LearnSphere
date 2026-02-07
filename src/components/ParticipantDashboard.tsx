@@ -246,7 +246,7 @@ const ParticipantDashboard: React.FC = () => {
             <div className="courses-grid">
               {courses.map((course) => {
                 const imageUrl = course.imageUrl 
-                  ? (course.imageUrl.startsWith('http') ? course.imageUrl : `http://localhost:5000${course.imageUrl}`)
+                  ? (course.imageUrl.startsWith('http') ? course.imageUrl : `${course.imageUrl}`)
                   : '';
 
                 return (

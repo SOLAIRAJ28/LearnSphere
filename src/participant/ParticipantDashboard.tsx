@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { participantAPI } from '../services/api';
 import { getCurrentUser } from '../utils/auth';
 import LogoutButton from '../components/LogoutButton';
+import Certificate from './Certificate';
 import logo from '../assets/logo.svg';
 import '../styles/ParticipantDashboard.css';
+import '../styles/Certificate.css';
 
 interface Course {
   _id: string;
@@ -44,6 +46,7 @@ const ParticipantDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [certificateCourse, setCertificateCourse] = useState<Course | null>(null);
   
   // Get userId from localStorage
   const currentUser = getCurrentUser();
@@ -179,9 +182,17 @@ const ParticipantDashboard: React.FC = () => {
     // If completed
     if (course.enrollmentStatus === 'Completed') {
       return (
-        <button className="action-btn completed-btn" disabled>
-          Completed ✓
-        </button>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button className="action-btn completed-btn" disabled>
+            Completed ✓
+          </button>
+          <button
+            className="cert-dashboard-btn"
+            onClick={() => setCertificateCourse(course)}
+          >
+            🏆 Certificate
+          </button>
+        </div>
       );
     }
 
@@ -251,7 +262,7 @@ const ParticipantDashboard: React.FC = () => {
             <div className="courses-grid">
               {courses.map((course) => {
                 const imageUrl = course.imageUrl 
-                  ? (course.imageUrl.startsWith('http') ? course.imageUrl : `http://localhost:5000${course.imageUrl}`)
+                  ? (course.imageUrl.startsWith('http') ? course.imageUrl : `${course.imageUrl}`)
                   : '';
 
                 return (
@@ -383,6 +394,16 @@ const ParticipantDashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Certificate Modal */}
+      {certificateCourse && (
+        <Certificate
+          studentName={currentUser?.name || profile?.name || 'Student'}
+          courseName={certificateCourse.title}
+          completionDate={new Date().toISOString()}
+          onClose={() => setCertificateCourse(null)}
+        />
+      )}
     </div>
   );
 };

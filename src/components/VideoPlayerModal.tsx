@@ -54,7 +54,7 @@ const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
 
   const getVideoUrl = () => {
     if (!videoContent?.videoFileId) return null;
-    return `http://localhost:5000/api/video/${videoContent.videoFileId}`;
+    return `/api/video/${videoContent.videoFileId}`;
   };
 
   if (!isOpen) return null;

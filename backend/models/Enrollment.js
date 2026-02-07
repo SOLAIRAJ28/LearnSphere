@@ -40,6 +40,14 @@ const enrollmentSchema = new mongoose.Schema(
       enum: ['Yet to Start', 'In Progress', 'Completed'],
       default: 'Yet to Start'
     },
+    completedContents: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Content'
+    }],
+    quizCompleted: {
+      type: Boolean,
+      default: false
+    },
     isPaid: {
       type: Boolean,
       default: false

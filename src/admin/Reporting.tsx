@@ -13,6 +13,7 @@ interface Enrollment {
     username: string;
     name?: string;
     email: string;
+    totalPoints?: number;
   };
   enrolledAt: string;
   startedAt: string | null;
@@ -48,14 +49,19 @@ const Reporting: React.FC = () => {
     try {
       setLoading(true);
       const response = await enrollmentAPI.getEnrollments(status);
-      const data = response.data || response;
-      setEnrollments(data.data || []);
-      setSummary(data.summary || {
+      console.log('Enrollment API response:', response);
+      
+      // Handle response shape: { success, data, summary }
+      const enrollmentData = response.data || [];
+      const summaryData = response.summary || {
         totalParticipants: 0,
         yetToStart: 0,
         inProgress: 0,
         completed: 0
-      });
+      };
+      
+      setEnrollments(Array.isArray(enrollmentData) ? enrollmentData : []);
+      setSummary(summaryData);
     } catch (error) {
       console.error('Error fetching enrollments:', error);
     } finally {
@@ -90,6 +96,28 @@ const Reporting: React.FC = () => {
       default:
         return '';
     }
+  };
+
+  const getBadge = (points: number = 0) => {
+    if (points >= 120) return 'Master';
+    else if (points >= 100) return 'Expert';
+    else if (points >= 80) return 'Specialist';
+    else if (points >= 60) return 'Achiever';
+    else if (points >= 40) return 'Explorer';
+    else if (points >= 20) return 'Newbie';
+    return 'Newbie';
+  };
+
+  const getBadgeColor = (badge: string) => {
+    const colors: { [key: string]: string } = {
+      'Newbie': '#9e9e9e',
+      'Explorer': '#2196f3',
+      'Achiever': '#4caf50',
+      'Specialist': '#ff9800',
+      'Expert': '#f44336',
+      'Master': '#9c27b0'
+    };
+    return colors[badge] || '#9e9e9e';
   };
 
   return (
@@ -213,10 +241,11 @@ const Reporting: React.FC = () => {
                 <tr>
                   <th>Course Name</th>
                   <th>Participant Name</th>
+                  <th>Points & Badge</th>
                   <th>Enrollment Date</th>
                   <th>Started Date</th>
                   <th>Time Spent</th>
-                  <th>Completion %</th>
+                  <th>Progress</th>
                   <th>Completed Date</th>
                   <th>Status</th>
                 </tr>
@@ -224,39 +253,59 @@ const Reporting: React.FC = () => {
               <tbody>
                 {enrollments.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="no-data">
+                    <td colSpan={9} className="no-data">
                       No enrollments found
                     </td>
                   </tr>
                 ) : (
-                  enrollments.map((enrollment) => (
-                    <tr key={enrollment._id}>
-                      <td>{enrollment.courseId?.title || 'N/A'}</td>
-                      <td>{enrollment.userId?.name || enrollment.userId?.username || 'N/A'}</td>
-                      <td>{formatDate(enrollment.enrolledAt)}</td>
-                      <td>{formatDate(enrollment.startedAt)}</td>
-                      <td>{formatTimeSpent(enrollment.timeSpent)}</td>
-                      <td>
-                        <div className="completion-cell">
-                          <div className="progress-bar">
-                            <div
-                              className="progress-fill"
-                              style={{ width: `${enrollment.completionPercentage}%` }}
-                            ></div>
+                  enrollments.map((enrollment) => {
+                    const userPoints = enrollment.userId?.totalPoints || 0;
+                    const userBadge = getBadge(userPoints);
+                    const badgeColor = getBadgeColor(userBadge);
+                    
+                    return (
+                      <tr key={enrollment._id}>
+                        <td>{enrollment.courseId?.title || 'N/A'}</td>
+                        <td>{enrollment.userId?.name || enrollment.userId?.username || 'N/A'}</td>
+                        <td>
+                          <div className="points-badge-cell">
+                            <div className="points-display">
+                              <span className="points-value">{userPoints}</span>
+                              <span className="points-label">pts</span>
+                            </div>
+                            <div 
+                              className="badge-mini" 
+                              style={{ backgroundColor: badgeColor }}
+                            >
+                              {userBadge}
+                            </div>
                           </div>
-                          <span className="percentage-text">
-                            {enrollment.completionPercentage}%
+                        </td>
+                        <td>{formatDate(enrollment.enrolledAt)}</td>
+                        <td>{formatDate(enrollment.startedAt)}</td>
+                        <td>{formatTimeSpent(enrollment.timeSpent)}</td>
+                        <td>
+                          <div className="completion-cell">
+                            <div className="progress-bar">
+                              <div
+                                className="progress-fill"
+                                style={{ width: `${enrollment.completionPercentage}%` }}
+                              ></div>
+                            </div>
+                            <span className="percentage-text">
+                              {enrollment.completionPercentage}%
+                            </span>
+                          </div>
+                        </td>
+                        <td>{formatDate(enrollment.completedAt)}</td>
+                        <td>
+                          <span className={`status-badge ${getStatusClass(enrollment.status)}`}>
+                            {enrollment.status}
                           </span>
-                        </div>
-                      </td>
-                      <td>{formatDate(enrollment.completedAt)}</td>
-                      <td>
-                        <span className={`status-badge ${getStatusClass(enrollment.status)}`}>
-                          {enrollment.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
