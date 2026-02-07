@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { participantAPI } from '../services/api';
 import { getCurrentUser } from '../utils/auth';
 import LogoutButton from '../components/LogoutButton';
@@ -36,6 +37,7 @@ interface Profile {
 }
 
 const ParticipantDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,13 +91,13 @@ const ParticipantDashboard: React.FC = () => {
   };
 
   const handleContinue = async (courseId: string) => {
-    // Navigate to course content page or mark as in progress
+    // Navigate to course player page
     try {
       await participantAPI.updateProgress(courseId, userId, 'In Progress');
-      alert('Continuing course...');
-      // In a real app, navigate to course content page
+      navigate(`/participant/course/${courseId}`);
     } catch (error: any) {
-      alert(error.message || 'Failed to continue course');
+      // Still navigate even if progress update fails
+      navigate(`/participant/course/${courseId}`);
     }
   };
 

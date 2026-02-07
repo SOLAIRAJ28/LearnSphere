@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Course, ViewMode } from '../types/course';
-import { courseAPI } from '../services/api';
+import { courseAPI, contentAPI } from '../services/api';
 import AdminHeader from './AdminHeader';
 import SearchAndControls from './SearchAndControls';
 import CourseCard from './CourseCard';
 import CourseList from './CourseList';
 import CreateCourseModal from './CreateCourseModal';
+import VideoPlayerModal from '../components/VideoPlayerModal';
 import Reporting from './Reporting';
 
 const AdminDashboard: React.FC = () => {
@@ -17,6 +18,9 @@ const AdminDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [selectedCourseForVideo, setSelectedCourseForVideo] = useState<Course | null>(null);
+  const [coursesWithVideo, setCoursesWithVideo] = useState<Set<string>>(new Set());
 
   // Fetch courses from API
   useEffect(() => {
@@ -32,6 +36,8 @@ const AdminDashboard: React.FC = () => {
             : course.tags
         }));
         setCourses(coursesWithArrayTags);
+        // Check which courses have video content
+        checkCoursesForVideos(coursesWithArrayTags);
       } catch (error) {
         console.error('Error fetching courses:', error);
       } finally {
@@ -40,6 +46,30 @@ const AdminDashboard: React.FC = () => {
     };
     fetchCourses();
   }, []);
+
+  // Check which courses have video content
+  const checkCoursesForVideos = async (courseList: Course[]) => {
+    const videoSet = new Set<string>();
+    
+    // Check each course for video content
+    const checks = courseList.map(async (course) => {
+      try {
+        const response = await contentAPI.getCourseContents(course._id);
+        const contents = response.data || response;
+        const hasVideo = contents.some(
+          (content: any) => content.category === 'video' && content.videoFileId
+        );
+        if (hasVideo) {
+          videoSet.add(course._id);
+        }
+      } catch (error) {
+        console.error(`Error checking video for course ${course._id}:`, error);
+      }
+    });
+    
+    await Promise.all(checks);
+    setCoursesWithVideo(videoSet);
+  };
 
   // Filter courses based on search query
   const filteredCourses = useMemo(() => {
@@ -87,6 +117,14 @@ const AdminDashboard: React.FC = () => {
     );
   };
 
+  const handlePlayVideo = (courseId: string) => {
+    const course = courses.find(c => c._id === courseId);
+    if (course) {
+      setSelectedCourseForVideo(course);
+      setIsVideoModalOpen(true);
+    }
+  };
+
   return (
     <div className="dashboard">
       <AdminHeader activeTab={activeTab} onTabChange={setActiveTab} />
@@ -111,6 +149,8 @@ const AdminDashboard: React.FC = () => {
                   onEdit={handleEdit}
                   onShare={handleShare}
                   onRemoveTag={handleRemoveTag}
+                  onPlayVideo={handlePlayVideo}
+                  hasVideo={coursesWithVideo.has(course._id)}
                 />
               ))}
             </div>
@@ -132,6 +172,18 @@ const AdminDashboard: React.FC = () => {
             onClose={() => setIsModalOpen(false)}
             onCreateCourse={handleCreateCourse}
           />
+
+          {selectedCourseForVideo && (
+            <VideoPlayerModal
+              isOpen={isVideoModalOpen}
+              onClose={() => {
+                setIsVideoModalOpen(false);
+                setSelectedCourseForVideo(null);
+              }}
+              courseId={selectedCourseForVideo._id}
+              courseTitle={selectedCourseForVideo.title}
+            />
+          )}
         </main>
       )}
       

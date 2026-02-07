@@ -19,6 +19,7 @@ const ViewContentModal: React.FC<ViewContentModalProps> = ({
   const [contents, setContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<Content | null>(null);
 
   useEffect(() => {
     if (isOpen && courseId) {
@@ -107,6 +108,11 @@ const ViewContentModal: React.FC<ViewContentModalProps> = ({
   };
 
   const getContentUrl = (content: Content) => {
+    // For uploaded videos, use the streaming API
+    if (content.videoFileId) {
+      return `http://localhost:5000/api/video/${content.videoFileId}`;
+    }
+    
     const url = content.videoLink || content.fileUrl || content.imageUrl || content.url;
     if (!url) return null;
 
@@ -146,6 +152,41 @@ const ViewContentModal: React.FC<ViewContentModalProps> = ({
         </div>
 
         <div className="modal-body">
+          {/* Video Player Section */}
+          {selectedVideo && (
+            <div className="video-player-section" style={{ marginBottom: '24px' }}>
+              <div className="video-player-header">
+                <h3>{selectedVideo.title}</h3>
+                <button 
+                  className="close-player-btn"
+                  onClick={() => setSelectedVideo(null)}
+                >
+                  Close Player
+                </button>
+              </div>
+              <div className="video-player-container" style={{ position: 'relative', paddingBottom: 0, height: 'auto' }}>
+                <video 
+                  controls 
+                  style={{ 
+                    width: '100%', 
+                    maxHeight: '500px',
+                    backgroundColor: '#000',
+                    borderRadius: '0 0 12px 12px'
+                  }}
+                  src={getContentUrl(selectedVideo) || undefined}
+                  autoPlay
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              {selectedVideo.description && (
+                <div className="video-description">
+                  <p>{selectedVideo.description}</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {loading && (
             <div className="loading-state">
               <p>Loading contents...</p>
@@ -226,6 +267,19 @@ const ViewContentModal: React.FC<ViewContentModalProps> = ({
                             )}
                           </div>
                           <div className="content-actions">
+                            {content.category === 'video' && (
+                              <button
+                                className="content-link-btn"
+                                onClick={() => setSelectedVideo(content)}
+                                style={{ 
+                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                  color: 'white',
+                                  border: 'none'
+                                }}
+                              >
+                                ▶️ Play Video
+                              </button>
+                            )}
                             {content.allowDownload && content.fileUrl && (
                               <button
                                 className="content-download-btn"

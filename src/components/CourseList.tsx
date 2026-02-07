@@ -7,6 +7,8 @@ interface CourseListProps {
   onShare: (courseId: string) => void;
   onView: (courseId: string) => void;
   onRemoveTag: (courseId: string, tag: string) => void;
+  onPlayVideo?: (courseId: string) => void;
+  hasVideo?: (courseId: string) => boolean;
 }
 
 const CourseList: React.FC<CourseListProps> = ({
@@ -15,6 +17,8 @@ const CourseList: React.FC<CourseListProps> = ({
   onShare,
   onView,
   onRemoveTag,
+  onPlayVideo,
+  hasVideo,
 }) => {
   return (
     <div className="course-list">
@@ -62,6 +66,20 @@ const CourseList: React.FC<CourseListProps> = ({
               </td>
               <td>
                 <div className="table-actions">
+                  {hasVideo && hasVideo(course._id) && onPlayVideo && (
+                    <button
+                      className="action-btn play-video-btn"
+                      onClick={() => onPlayVideo(course._id)}
+                      title="Play course video"
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        border: 'none',
+                      }}
+                    >
+                      ▶ Play Video
+                    </button>
+                  )}
                   <button
                     className="action-btn view-btn"
                     onClick={() => onView(course._id)}

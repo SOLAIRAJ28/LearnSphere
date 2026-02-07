@@ -185,6 +185,20 @@ export const contentAPI = {
     return response.json();
   },
 
+  // Get contents by courseId (alternative method)
+  getContents: async (courseId: string) => {
+    const response = await fetch(`${API_URL}/contents?courseId=${courseId}`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch contents');
+    }
+    
+    return response.json();
+  },
+
   // Create content
   createContent: async (courseId: string, data: any) => {
     const response = await fetch(`${API_URL}/courses/${courseId}/contents`, {
@@ -241,6 +255,137 @@ export const contentAPI = {
       throw new Error('Failed to reorder contents');
     }
     
+    return response.json();
+  },
+
+  // Upload video content with progress tracking
+  uploadVideoContent: async (
+    courseId: string, 
+    formData: FormData, 
+    onProgress?: (progressEvent: any) => void
+  ) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      
+      // Track upload progress
+      if (onProgress) {
+        xhr.upload.addEventListener('progress', (e) => {
+          onProgress(e);
+        });
+      }
+      
+      // Handle completion
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(JSON.parse(xhr.responseText));
+        } else {
+          reject(new Error(JSON.parse(xhr.responseText).message || 'Failed to upload video'));
+        }
+      });
+      
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        reject(new Error('Network error during video upload'));
+      });
+      
+      xhr.addEventListener('abort', () => {
+        reject(new Error('Video upload cancelled'));
+      });
+      
+      // Open connection and send
+      xhr.open('POST', `${API_URL}/courses/${courseId}/contents/video`);
+      
+      // Add auth header
+      const token = getAuthToken();
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      }
+      
+      xhr.send(formData);
+    });
+  },
+
+  // NEW: Cloud storage upload flow
+  // Step 1: Get signed upload URL from backend
+  getVideoUploadUrl: async (fileName: string, fileType: string, fileSize: number) => {
+    const response = await fetch(`${API_URL}/video/upload-url`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ fileName, fileType, fileSize })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to get upload URL');
+    }
+
+    return response.json();
+  },
+
+  // Step 2: Upload video directly to S3 with progress tracking
+  uploadToCloud: async (
+    uploadUrl: string,
+    file: File,
+    onProgress?: (progressEvent: any) => void
+  ) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      // Track upload progress
+      if (onProgress) {
+        xhr.upload.addEventListener('progress', (e) => {
+          onProgress(e);
+        });
+      }
+
+      // Handle completion
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve({ success: true });
+        } else {
+          reject(new Error('Failed to upload to cloud storage'));
+        }
+      });
+
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        reject(new Error('Network error during cloud upload'));
+      });
+
+      xhr.addEventListener('abort', () => {
+        reject(new Error('Upload cancelled'));
+      });
+
+      // Open connection and send to S3
+      xhr.open('PUT', uploadUrl);
+      xhr.setRequestHeader('Content-Type', file.type);
+      xhr.send(file);
+    });
+  },
+
+  // Step 3: Save video metadata after successful upload
+  saveVideoMetadata: async (
+    courseId: string,
+    data: {
+      title: string;
+      duration: number;
+      responsible?: string;
+      description?: string;
+      videoUrl: string;
+      storageKey: string;
+    }
+  ) => {
+    const response = await fetch(`${API_URL}/courses/${courseId}/contents/video-metadata`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to save video metadata');
+    }
+
     return response.json();
   }
 };

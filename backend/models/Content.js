@@ -39,6 +39,21 @@ const contentSchema = new mongoose.Schema(
       type: String,
       default: null
     },
+    videoFileId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+      comment: 'GridFS file ID for uploaded video files (deprecated - use videoUrl)'
+    },
+    videoUrl: {
+      type: String,
+      default: null,
+      comment: 'Direct URL to video file in cloud storage (S3, R2, etc.)'
+    },
+    storageKey: {
+      type: String,
+      default: null,
+      comment: 'Storage key/path for video in cloud bucket'
+    },
     fileUrl: {
       type: String,
       default: null

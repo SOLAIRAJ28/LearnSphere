@@ -1,13 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Course, ViewMode } from '../types/course';
-import { courseAPI } from '../services/api';
+import { courseAPI, contentAPI } from '../services/api';
 import Header from './Header';
 import SearchAndControls from './SearchAndControls';
 import CourseCard from './CourseCard';
 import CourseList from './CourseList';
 import CreateCourseModal from './CreateCourseModal';
 import ViewContentModal from './ViewContentModal';
+import VideoPlayerModal from './VideoPlayerModal';
 import Reporting from './Reporting';
 
 const Dashboard: React.FC = () => {
@@ -19,8 +20,32 @@ const Dashboard: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [selectedCourseTitle, setSelectedCourseTitle] = useState<string>('');
+  const [selectedCourseForVideo, setSelectedCourseForVideo] = useState<string>('');
+  const [coursesWithVideo, setCoursesWithVideo] = useState<Set<string>>(new Set());
+
+  // Check which courses have video content
+  const checkCoursesForVideos = async (coursesToCheck: Course[]) => {
+    const courseIdsWithVideo = new Set<string>();
+    
+    for (const course of coursesToCheck) {
+      try {
+        const response = await contentAPI.getContents(course._id);
+        const contents = response.data || response;
+        // Check if any content has a videoFileId
+        const hasVideo = contents.some((content: any) => content.videoFileId);
+        if (hasVideo) {
+          courseIdsWithVideo.add(course._id);
+        }
+      } catch (error) {
+        console.error(`Error checking video for course ${course._id}:`, error);
+      }
+    }
+    
+    setCoursesWithVideo(courseIdsWithVideo);
+  };
 
   // Fetch courses from API
   useEffect(() => {
@@ -36,6 +61,8 @@ const Dashboard: React.FC = () => {
             : course.tags
         }));
         setCourses(coursesWithArrayTags);
+        // Check for videos after setting courses
+        checkCoursesForVideos(coursesWithArrayTags);
       } catch (error) {
         console.error('Error fetching courses:', error);
       } finally {
@@ -100,6 +127,11 @@ const Dashboard: React.FC = () => {
     );
   };
 
+  const handlePlayVideo = (courseId: string) => {
+    setSelectedCourseForVideo(courseId);
+    setIsVideoModalOpen(true);
+  };
+
   return (
     <div className="dashboard">
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
@@ -125,6 +157,8 @@ const Dashboard: React.FC = () => {
                   onShare={handleShare}
                   onView={handleView}
                   onRemoveTag={handleRemoveTag}
+                  onPlayVideo={handlePlayVideo}
+                  hasVideo={coursesWithVideo.has(course._id)}
                 />
               ))}
             </div>
@@ -135,6 +169,8 @@ const Dashboard: React.FC = () => {
               onShare={handleShare}
               onView={handleView}
               onRemoveTag={handleRemoveTag}
+              onPlayVideo={handlePlayVideo}
+              hasVideo={(courseId) => coursesWithVideo.has(courseId)}
             />
           )}
           
@@ -153,6 +189,12 @@ const Dashboard: React.FC = () => {
             onClose={() => setIsViewModalOpen(false)}
             courseId={selectedCourseId}
             courseTitle={selectedCourseTitle}
+          />
+          
+          <VideoPlayerModal
+            isOpen={isVideoModalOpen}
+            onClose={() => setIsVideoModalOpen(false)}
+            courseId={selectedCourseForVideo}
           />
         </main>
       )}

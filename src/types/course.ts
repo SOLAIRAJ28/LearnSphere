@@ -25,6 +25,7 @@ export interface Content {
   title: string;
   category: 'video' | 'document' | 'image' | 'article' | 'quiz' | 'presentation' | 'infographic';
   videoLink?: string;
+  videoFileId?: string; // GridFS file ID for uploaded videos
   fileUrl?: string;
   imageUrl?: string;
   duration: number;

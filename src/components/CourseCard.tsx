@@ -7,6 +7,8 @@ interface CourseCardProps {
   onShare: (courseId: string) => void;
   onView: (courseId: string) => void;
   onRemoveTag: (courseId: string, tag: string) => void;
+  onPlayVideo?: (courseId: string) => void;
+  hasVideo?: boolean;
 }
 
 const CourseCard: React.FC<CourseCardProps> = ({
@@ -15,6 +17,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
   onShare,
   onView,
   onRemoveTag,
+  onPlayVideo,
+  hasVideo = false,
 }) => {
   const imageUrl = course.imageUrl 
     ? (course.imageUrl.startsWith('http') ? course.imageUrl : `http://localhost:5000${course.imageUrl}`)
@@ -64,6 +68,20 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </div>
         
         <div className="course-actions">
+          {hasVideo && onPlayVideo && (
+            <button
+              className="action-btn play-video-btn"
+              onClick={() => onPlayVideo(course._id)}
+              title="Play course video"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                border: 'none',
+              }}
+            >
+              ▶ Play Video
+            </button>
+          )}
           <button
             className="action-btn view-btn"
             onClick={() => onView(course._id)}

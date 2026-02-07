@@ -52,6 +52,11 @@ const CourseEdit: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string>('');
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  // Video upload states
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+
   // Options tab states
   const [users, setUsers] = useState<User[]>([]);
   const [visibility, setVisibility] = useState<string>('everyone');
@@ -229,36 +234,61 @@ const CourseEdit: React.FC = () => {
     }
 
     // Validate based on category
-    if (contentCategory === 'video' && !contentUrl.trim()) {
-      alert('Please enter video link');
-      return;
-    }
-    if (contentCategory === 'video' && !contentDuration) {
-      alert('Please enter video duration');
-      return;
+    if (contentCategory === 'video') {
+      if (!videoFile) {
+        alert('Please select a video file');
+        return;
+      }
+      if (!contentDuration) {
+        alert('Please enter video duration');
+        return;
+      }
     }
 
     try {
-      await contentAPI.createContent(id!, {
-        title: contentTitle,
-        category: contentCategory,
-        duration: parseInt(contentDuration) || 0,
-        url: contentUrl,
-        videoLink: contentCategory === 'video' ? contentUrl : undefined,
-        fileUrl: contentCategory === 'document' ? contentUrl : undefined,
-        imageUrl: contentCategory === 'image' ? contentUrl : undefined,
-        responsible: contentResponsible,
-        description: contentDescription,
-        allowDownload: contentAllowDownload,
-        attachmentUrl: contentAttachment,
-        attachmentLink: contentAttachmentLink
-      });
+      // Handle video file upload separately
+      if (contentCategory === 'video' && videoFile) {
+        setUploadingVideo(true);
+        setUploadProgress(0);
+
+        const formData = new FormData();
+        formData.append('video', videoFile);
+        formData.append('title', contentTitle);
+        formData.append('duration', contentDuration);
+        formData.append('responsible', contentResponsible);
+        formData.append('description', contentDescription);
+
+        // Upload video with progress tracking
+        await contentAPI.uploadVideoContent(id!, formData, (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+          setUploadProgress(progress);
+        });
+
+        setUploadingVideo(false);
+      } else {
+        // Handle other content types (document, image)
+        await contentAPI.createContent(id!, {
+          title: contentTitle,
+          category: contentCategory,
+          duration: parseInt(contentDuration) || 0,
+          url: contentUrl,
+          videoLink: contentCategory === 'video' ? contentUrl : undefined,
+          fileUrl: contentCategory === 'document' ? contentUrl : undefined,
+          imageUrl: contentCategory === 'image' ? contentUrl : undefined,
+          responsible: contentResponsible,
+          description: contentDescription,
+          allowDownload: contentAllowDownload,
+          attachmentUrl: contentAttachment,
+          attachmentLink: contentAttachmentLink
+        });
+      }
       
       resetContentForm();
       setShowContentForm(false);
       await fetchContents();
       await fetchCourseData();
     } catch (err: any) {
+      setUploadingVideo(false);
       alert(err.message || 'Failed to create content');
     }
   };
@@ -274,6 +304,9 @@ const CourseEdit: React.FC = () => {
     setContentAttachment('');
     setContentAttachmentLink('');
     setContentModalTab('content');
+    setVideoFile(null);
+    setUploadingVideo(false);
+    setUploadProgress(0);
   };
 
   const handleUpdateContent = async () => {
@@ -659,16 +692,57 @@ const CourseEdit: React.FC = () => {
                             {contentCategory === 'video' && (
                               <>
                                 <div className="form-group">
-                                  <label>Video Link *</label>
+                                  <label>Video File * (MP4, WEBM, MOV - Max 5GB)</label>
                                   <input
-                                    type="text"
-                                    value={contentUrl}
-                                    onChange={(e) => setContentUrl(e.target.value)}
-                                    placeholder="YouTube URL or filename (e.g., Machine_Learning_Course_for_Beginners_720P.mp4)"
+                                    type="file"
+                                    accept="video/mp4,video/webm,video/quicktime"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        // Validate file size (5GB)
+                                        const maxSize = 5 * 1024 * 1024 * 1024; // 5GB
+                                        if (file.size > maxSize) {
+                                          alert('File too large. Maximum size is 5GB.');
+                                          e.target.value = '';
+                                          return;
+                                        }
+                                        // Validate file type
+                                        const validTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
+                                        if (!validTypes.includes(file.type)) {
+                                          alert('Invalid file type. Only MP4, WEBM, and MOV files are allowed.');
+                                          e.target.value = '';
+                                          return;
+                                        }
+                                        setVideoFile(file);
+                                      }
+                                    }}
+                                    disabled={uploadingVideo}
                                   />
-                                  <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                                    For local videos: Put video file in <strong>public</strong> folder and enter filename only
-                                  </small>
+                                  {videoFile && (
+                                    <small className="file-name" style={{ color: '#28a745', display: 'block', marginTop: '8px' }}>
+                                      ✓ Selected: {videoFile.name} ({(videoFile.size / (1024 * 1024)).toFixed(2)} MB)
+                                    </small>
+                                  )}
+                                  {uploadingVideo && (
+                                    <div style={{ marginTop: '12px' }}>
+                                      <div style={{ 
+                                        background: '#f0f0f0', 
+                                        borderRadius: '8px', 
+                                        overflow: 'hidden',
+                                        height: '8px'
+                                      }}>
+                                        <div style={{
+                                          background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                                          height: '100%',
+                                          width: `${uploadProgress}%`,
+                                          transition: 'width 0.3s ease'
+                                        }}></div>
+                                      </div>
+                                      <small style={{ color: '#666', marginTop: '4px', display: 'block' }}>
+                                        {uploadProgress < 100 ? `Uploading... ${uploadProgress}%` : 'Processing...'}
+                                      </small>
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="form-group">
                                   <label>Duration (in minutes) *</label>

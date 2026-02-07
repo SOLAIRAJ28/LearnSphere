@@ -1,0 +1,397 @@
+/* ===========================
+   Course Player - Full Page
+   =========================== */
+
+.course-player {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #0f0f0f;
+  color: #fff;
+}
+
+/* Top Bar */
+.cp-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #2a2a4a;
+  min-height: 56px;
+}
+
+.cp-back-btn {
+  background: none;
+  border: 1px solid #555;
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.cp-back-btn:hover {
+  background: #333;
+  border-color: #888;
+}
+
+.cp-course-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cp-course-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+/* Main Layout */
+.cp-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Video Player Area */
+.cp-player-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-video-container {
+  width: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  max-height: 70vh;
+}
+
+.cp-video {
+  width: 100%;
+  height: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  background: #000;
+}
+
+/* Content Details */
+.cp-content-details {
+  padding: 24px 32px;
+  border-top: 1px solid #2a2a4a;
+  background: #1a1a2e;
+}
+
+.cp-content-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.cp-content-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.cp-meta-item {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.cp-category-badge {
+  background: #333;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: capitalize;
+  color: #ccc;
+}
+
+.cp-content-description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #bbb;
+  margin: 0;
+}
+
+/* Sidebar */
+.cp-sidebar {
+  width: 360px;
+  min-width: 360px;
+  background: #16213e;
+  border-left: 1px solid #2a2a4a;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cp-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.cp-sidebar-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cp-lesson-count {
+  font-size: 13px;
+  color: #aaa;
+  background: #333;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.cp-content-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.cp-content-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #1e2a4a;
+  transition: all 0.2s;
+}
+
+.cp-content-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cp-content-item.active {
+  background: rgba(99, 102, 241, 0.15);
+  border-left: 3px solid #6366f1;
+}
+
+.cp-item-number {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #aaa;
+}
+
+.cp-content-item.active .cp-item-number {
+  background: #6366f1;
+  color: #fff;
+}
+
+.cp-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cp-item-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cp-item-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: #888;
+}
+
+.cp-item-type {
+  font-size: 14px;
+}
+
+.cp-item-duration {
+  color: #888;
+}
+
+.cp-playing-indicator {
+  color: #6366f1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* No Video / No Content States */
+.cp-no-video,
+.cp-no-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  text-align: center;
+  padding: 40px;
+}
+
+.cp-no-video-icon,
+.cp-no-content-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.cp-no-video h3,
+.cp-no-content h3 {
+  font-size: 20px;
+  margin: 0 0 8px 0;
+}
+
+.cp-no-video p,
+.cp-no-content p {
+  color: #888;
+  font-size: 14px;
+  margin: 0;
+}
+
+.cp-open-link {
+  margin-top: 16px;
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.cp-open-link:hover {
+  color: #818cf8;
+}
+
+.cp-no-lessons {
+  padding: 40px 20px;
+  text-align: center;
+  color: #888;
+}
+
+/* Loading & Error */
+.course-player-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #0f0f0f;
+  color: #fff;
+}
+
+.cp-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #333;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: cp-spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes cp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.course-player-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #0f0f0f;
+  color: #fff;
+  text-align: center;
+  padding: 40px;
+}
+
+.course-player-error h2 {
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+
+.course-player-error p {
+  color: #aaa;
+  margin-bottom: 24px;
+}
+
+.course-player-error button {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.course-player-error button:hover {
+  background: #4f46e5;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .cp-main {
+    flex-direction: column;
+  }
+
+  .cp-sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-height: 300px;
+    border-left: none;
+    border-top: 1px solid #2a2a4a;
+  }
+
+  .cp-video-container {
+    max-height: 50vh;
+  }
+
+  .cp-video {
+    max-height: 50vh;
+  }
+}
+
+@media (max-width: 600px) {
+  .cp-topbar {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .cp-course-title {
+    font-size: 15px;
+  }
+
+  .cp-content-details {
+    padding: 16px;
+  }
+
+  .cp-content-title {
+    font-size: 18px;
+  }
+}

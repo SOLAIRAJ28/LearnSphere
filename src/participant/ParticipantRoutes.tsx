@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ParticipantDashboard from './ParticipantDashboard';
+import CoursePlayer from './CoursePlayer';
 
 /**
  * Participant Routes Component
@@ -22,13 +23,8 @@ const ParticipantRoutes: React.FC = () => {
         </div>
       } />
       
-      {/* Course Player - Placeholder for future */}
-      <Route path="/course/:id" element={
-        <div style={{ padding: '2rem' }}>
-          <h2>Course Player</h2>
-          <p>Course playing interface coming soon...</p>
-        </div>
-      } />
+      {/* Course Player - Video Playback */}
+      <Route path="/course/:id" element={<CoursePlayer />} />
       
       {/* Catch all - redirect to my courses */}
       <Route path="*" element={<Navigate to="/participant/my-courses" replace />} />

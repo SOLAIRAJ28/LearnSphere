@@ -25,3 +25,5 @@ dist-ssr
 
 # Large video files (exceeds GitHub 2GB limit)
 videos/data analytics.mp4
+"public/Machine_Learning_Course_for_Beginners_720P.mp4"  
+"*.mp4" 
