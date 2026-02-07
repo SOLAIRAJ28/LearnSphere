@@ -495,3 +495,20 @@ export const enrollmentAPI = {
     return response.json();
   }
 };
+
+// User API
+export const userAPI = {
+  // Get all users
+  getAllUsers: async () => {
+    const response = await fetch(`${API_URL}/auth/users`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch users');
+    }
+
+    return response.json();
+  }
+};

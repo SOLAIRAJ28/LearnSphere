@@ -47,6 +47,31 @@ const courseSchema = new mongoose.Schema(
     shareLink: {
       type: String,
       default: null
+    },
+    visibility: {
+      type: String,
+      enum: ['everyone', 'signed_in'],
+      default: 'everyone'
+    },
+    accessRules: {
+      type: [String],
+      enum: ['open', 'invitation', 'payment'],
+      default: ['open']
+    },
+    price: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    responsibleUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
+    },
+    adminUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
     }
   },
   {

@@ -117,3 +117,23 @@ export const getMe = async (req, res) => {
     });
   }
 };
+
+// @desc    Get all users (for dropdowns)
+// @route   GET /api/auth/users
+// @access  Public (temporarily)
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('_id username name email');
+
+    res.json({
+      success: true,
+      data: users
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching users',
+      error: error.message
+    });
+  }
+};

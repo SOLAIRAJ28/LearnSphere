@@ -10,6 +10,11 @@ export interface Course {
   totalDuration: number;
   isPublished: boolean;
   shareLink: string;
+  visibility?: string;
+  accessRules?: string[];
+  price?: number;
+  responsibleUserId?: string;
+  adminUserId?: string;
   createdAt: string;
   updatedAt: string;
 }

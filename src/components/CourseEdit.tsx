@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Course, Content } from '../types/course';
-import { courseAPI, contentAPI } from '../services/api';
+import { courseAPI, contentAPI, userAPI } from '../services/api';
 import Header from './Header';
 import QuizManager from './QuizManager';
 import '../styles/CourseEdit.css';
 
 type TabType = 'content' | 'description' | 'options' | 'quiz';
+
+interface User {
+  _id: string;
+  username: string;
+  name?: string;
+  email: string;
+}
 
 const CourseEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,12 +52,30 @@ const CourseEdit: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string>('');
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  // Options tab states
+  const [users, setUsers] = useState<User[]>([]);
+  const [visibility, setVisibility] = useState<string>('everyone');
+  const [accessRules, setAccessRules] = useState<string[]>(['open']);
+  const [price, setPrice] = useState<number>(0);
+  const [responsibleUserId, setResponsibleUserId] = useState<string>('');
+  const [adminUserId, setAdminUserId] = useState<string>('');
+
   useEffect(() => {
     if (id) {
       fetchCourseData();
       fetchContents();
     }
+    fetchUsers();
   }, [id]);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await userAPI.getAllUsers();
+      setUsers(response.data || []);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  };
 
   const fetchCourseData = async () => {
     try {
@@ -63,6 +88,13 @@ const CourseEdit: React.FC = () => {
       setResponsible(courseData.responsible || '');
       setDescription(courseData.description || '');
       setImageUrl(courseData.imageUrl || '');
+      
+      // Load options data
+      setVisibility(courseData.visibility || 'everyone');
+      setAccessRules(courseData.accessRules || ['open']);
+      setPrice(courseData.price || 0);
+      setResponsibleUserId(courseData.responsibleUserId || '');
+      setAdminUserId(courseData.adminUserId || '');
       
       // Set image preview if course has an image
       if (courseData.imageUrl) {
@@ -151,13 +183,43 @@ const CourseEdit: React.FC = () => {
         tags,
         responsible,
         description,
-        imageUrl
+        imageUrl,
+        visibility,
+        accessRules,
+        price,
+        responsibleUserId: responsibleUserId || undefined,
+        adminUserId: adminUserId || undefined
       });
       alert('Course updated successfully!');
       await fetchCourseData();
     } catch (err: any) {
       alert(err.message || 'Failed to update course');
     }
+  };
+
+  const handleAccessRuleChange = (rule: string) => {
+    if (accessRules.includes(rule)) {
+      setAccessRules(accessRules.filter(r => r !== rule));
+      // Clear price if payment rule is unchecked
+      if (rule === 'payment') {
+        setPrice(0);
+      }
+    } else {
+      setAccessRules([...accessRules, rule]);
+    }
+  };
+
+  const handleTogglePublish = async () => {
+    try {
+      await courseAPI.togglePublish(id!);
+      await fetchCourseData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to toggle publish status');
+    }
+  };
+
+  const handlePreview = () => {
+    window.open(`/preview/course/${id}`, '_blank');
   };
 
   const handleCreateContent = async () => {
@@ -284,15 +346,6 @@ const CourseEdit: React.FC = () => {
     setActiveMenuId(null);
   };
 
-  const handleTogglePublish = async () => {
-    try {
-      await courseAPI.togglePublish(id!);
-      await fetchCourseData();
-    } catch (err: any) {
-      alert(err.message || 'Failed to toggle publish status');
-    }
-  };
-
   if (loading) return <div className="loading">Loading course...</div>;
   if (error) return <div className="error-message">{error}</div>;
   if (!course) return <div className="error-message">Course not found</div>;
@@ -306,9 +359,27 @@ const CourseEdit: React.FC = () => {
           <button className="back-btn" onClick={() => navigate('/')}>
             ← Back to Courses
           </button>
-          <button className="new-btn" onClick={handleSaveCourse}>
-            Save Changes
-          </button>
+          <div className="header-actions">
+            <div className="publish-toggle-container">
+              <label className="publish-toggle-label">
+                <span>Publish on web</span>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={course?.isPublished || false}
+                    onChange={handleTogglePublish}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </label>
+            </div>
+            <button className="preview-btn" onClick={handlePreview}>
+              Preview
+            </button>
+            <button className="new-btn" onClick={handleSaveCourse}>
+              Save Changes
+            </button>
+          </div>
         </div>
 
         <div className="course-basic-info">
@@ -782,33 +853,111 @@ const CourseEdit: React.FC = () => {
 
             {activeTab === 'options' && (
               <div className="options-tab">
-                <div className="option-item">
-                  <div className="option-info">
-                    <h4>Publish Course</h4>
-                    <p>Make this course visible on the website</p>
+                <div className="options-layout">
+                  {/* Left Section - Access Course Rights */}
+                  <div className="options-left">
+                    <div className="options-section">
+                      <h3>Access Course Rights</h3>
+                      
+                      <div className="form-group">
+                        <label>Show course to</label>
+                        <select
+                          value={visibility}
+                          onChange={(e) => setVisibility(e.target.value)}
+                        >
+                          <option value="everyone">Everyone</option>
+                          <option value="signed_in">Signed In</option>
+                        </select>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Access rules</label>
+                        <div className="checkbox-group">
+                          <label className="checkbox-label">
+                            <input
+                              type="checkbox"
+                              checked={accessRules.includes('open')}
+                              onChange={() => handleAccessRuleChange('open')}
+                            />
+                            <span>Open</span>
+                          </label>
+                          <label className="checkbox-label">
+                            <input
+                              type="checkbox"
+                              checked={accessRules.includes('invitation')}
+                              onChange={() => handleAccessRuleChange('invitation')}
+                            />
+                            <span>On Invitation</span>
+                          </label>
+                          <label className="checkbox-label">
+                            <input
+                              type="checkbox"
+                              checked={accessRules.includes('payment')}
+                              onChange={() => handleAccessRuleChange('payment')}
+                            />
+                            <span>On Payment</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {accessRules.includes('payment') && (
+                        <div className="form-group">
+                          <label>Price</label>
+                          <input
+                            type="number"
+                            value={price}
+                            onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                            required
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={course.isPublished}
-                      onChange={handleTogglePublish}
-                    />
-                    <span className="slider"></span>
-                  </label>
+
+                  {/* Right Section - Responsible & Course Admin */}
+                  <div className="options-right">
+                    <div className="options-section">
+                      <h3>Responsible</h3>
+                      <div className="form-group">
+                        <label>Responsible</label>
+                        <select
+                          value={responsibleUserId}
+                          onChange={(e) => setResponsibleUserId(e.target.value)}
+                        >
+                          <option value="">Select a user</option>
+                          {users.map((user) => (
+                            <option key={user._id} value={user._id}>
+                              {user.name || user.username}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Course Admin</label>
+                        <select
+                          value={adminUserId}
+                          onChange={(e) => setAdminUserId(e.target.value)}
+                        >
+                          <option value="">Select a user</option>
+                          {users.map((user) => (
+                            <option key={user._id} value={user._id}>
+                              {user.name || user.username}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="course-stats">
-                  <div className="stat-item">
-                    <span className="stat-label">Total Views:</span>
-                    <span className="stat-value">{course.viewsCount}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">Total Lessons:</span>
-                    <span className="stat-value">{course.lessonsCount}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">Total Duration:</span>
-                    <span className="stat-value">{course.totalDuration} minutes</span>
-                  </div>
+
+                <div className="options-actions">
+                  <button className="btn-primary" onClick={handleSaveCourse}>
+                    Save Options
+                  </button>
                 </div>
               </div>
             )}
