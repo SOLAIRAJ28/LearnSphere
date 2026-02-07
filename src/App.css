@@ -40,6 +40,10 @@ body {
   height: 60px;
 }
 
+.header-actions {
+  margin-left: auto;
+}
+
 .app-branding {
   display: flex;
   align-items: center;

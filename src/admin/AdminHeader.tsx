@@ -27,8 +27,10 @@ const AdminHeader: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
               {tab}
             </button>
           ))}
-          <LogoutButton variant="header" />
         </nav>
+        <div className="header-actions">
+          <LogoutButton variant="header" />
+        </div>
       </div>
     </header>
   );

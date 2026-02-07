@@ -142,16 +142,23 @@ const Auth: React.FC = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-container">
-        {/* Logo */}
-        <div className="auth-logo">
-          <img src={logo} alt="LearnSphere" />
-          <h1>LearnSphere</h1>
-          <p>Your Gateway to Knowledge</p>
+      {/* Left Section - Hero/Image */}
+      <div className="auth-hero">
+        <div className="hero-content">
         </div>
+      </div>
 
-        {/* Tab Switcher */}
-        <div className="auth-tabs">
+      {/* Right Section - Auth Card */}
+      <div className="auth-container">
+        <div className="auth-form-card">
+          {/* Logo */}
+          <div className="auth-logo">
+            <img src={logo} alt="LearnSphere" />
+            <h1>LearnSphere</h1>
+          </div>
+
+          {/* Tab Switcher */}
+          <div className="auth-tabs">
           <button
             className={`auth-tab ${isLogin ? 'active' : ''}`}
             onClick={() => {
@@ -250,9 +257,6 @@ const Auth: React.FC = () => {
                 placeholder="Create a password"
                 required
               />
-              <small className="password-hint">
-                Must contain: Uppercase, Lowercase, Number, Special character (min 8 chars)
-              </small>
             </div>
 
             <div className="form-group">
@@ -274,12 +278,9 @@ const Auth: React.FC = () => {
             <p className="auth-hint">
               Already have an account? <span onClick={() => setIsLogin(true)}>Login</span>
             </p>
-
-            <p className="admin-note">
-              Note: Signup is for participants only. Contact admin for admin access.
-            </p>
           </form>
         )}
+        </div>
       </div>
     </div>
   );

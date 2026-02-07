@@ -5,6 +5,7 @@ interface CourseCardProps {
   course: Course;
   onEdit: (courseId: string) => void;
   onShare: (courseId: string) => void;
+  onView: (courseId: string) => void;
   onRemoveTag: (courseId: string, tag: string) => void;
 }
 
@@ -12,6 +13,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   course,
   onEdit,
   onShare,
+  onView,
   onRemoveTag,
 }) => {
   const imageUrl = course.imageUrl 
@@ -62,6 +64,12 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </div>
         
         <div className="course-actions">
+          <button
+            className="action-btn view-btn"
+            onClick={() => onView(course._id)}
+          >
+            View
+          </button>
           <button
             className="action-btn share-btn"
             onClick={() => onShare(course._id)}
