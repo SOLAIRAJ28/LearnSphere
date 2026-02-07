@@ -1,7 +1,27 @@
 <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- KEC text logo in white -->
-  <text x="10" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ffffff">KEC</text>
-  <text x="65" y="28" font-family="Arial, sans-serif" font-size="16" fill="#ffffff">LearnHub</text>
-  <!-- Accent element -->
-  <path d="M 5 32 Q 70 35, 135 32" stroke="#7cb342" stroke-width="2" fill="none"/>
+  <!-- Define gradients -->
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7cb342;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8bc34a;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background circle decoration -->
+  <circle cx="30" cy="20" r="18" fill="url(#logoGradient)" opacity="0.1"/>
+  
+  <!-- KEC text logo with gradient and shadow -->
+  <text x="10" y="28" font-family="Arial, sans-serif" font-size="26" font-weight="900" fill="url(#logoGradient)" filter="url(#shadow)">KEC</text>
+  <text x="68" y="28" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="url(#logoGradient)">LearnHub</text>
+  
+  <!-- Decorative accent lines -->
+  <path d="M 5 32 Q 70 35, 135 32" stroke="url(#accentGradient)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M 10 35 L 50 35" stroke="url(#accentGradient)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
 </svg>

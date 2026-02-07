@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { participantAPI } from '../services/api';
 import { getCurrentUser } from '../utils/auth';
 import LogoutButton from '../components/LogoutButton';
+import logo from '../assets/logo.svg';
 import '../styles/ParticipantDashboard.css';
 
 interface Course {
@@ -209,7 +210,7 @@ const ParticipantDashboard: React.FC = () => {
       <header className="participant-header">
         <div className="header-content">
           <div className="logo">
-            <h1>LearnSphere</h1>
+            <img src={logo} alt="KEC LearnHub" className="app-logo" />
           </div>
           
           <div className="search-bar">

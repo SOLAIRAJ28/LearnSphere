@@ -5,6 +5,7 @@ interface CourseCardProps {
   course: Course;
   onEdit: (courseId: string) => void;
   onShare: (courseId: string) => void;
+  onView: (courseId: string) => void;
   onRemoveTag: (courseId: string, tag: string) => void;
   onPlayVideo?: (courseId: string) => void;
   hasVideo?: boolean;
@@ -14,6 +15,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   course,
   onEdit,
   onShare,
+  onView,
   onRemoveTag,
   onPlayVideo,
   hasVideo = false,
@@ -80,6 +82,12 @@ const CourseCard: React.FC<CourseCardProps> = ({
               ▶ Play Video
             </button>
           )}
+          <button
+            className="action-btn view-btn"
+            onClick={() => onView(course._id)}
+          >
+            View
+          </button>
           <button
             className="action-btn share-btn"
             onClick={() => onShare(course._id)}

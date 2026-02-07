@@ -16,15 +16,25 @@
 
 /* Header variant - used in navigation bar */
 .logout-header {
-  color: #ef4444;
-  background: transparent;
-  border: 1px solid transparent;
+  color: white;
+  background: #ef4444;
+  border: 1px solid #ef4444;
+  padding: 10px 20px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
 
 .logout-header:hover {
-  background: #fef2f2;
-  border-color: #ef4444;
-  color: #dc2626;
+  background: #dc2626;
+  border-color: #dc2626;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+}
+
+.logout-header:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
 
 /* Dropdown variant - used in profile dropdown */

@@ -8,6 +8,7 @@ import CourseCard from './CourseCard';
 import CourseList from './CourseList';
 import CreateCourseModal from './CreateCourseModal';
 import VideoPlayerModal from '../components/VideoPlayerModal';
+import ViewContentModal from '../components/ViewContentModal';
 import Reporting from './Reporting';
 
 const AdminDashboard: React.FC = () => {
@@ -21,6 +22,8 @@ const AdminDashboard: React.FC = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [selectedCourseForVideo, setSelectedCourseForVideo] = useState<Course | null>(null);
   const [coursesWithVideo, setCoursesWithVideo] = useState<Set<string>>(new Set());
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   // Fetch courses from API
   useEffect(() => {
@@ -100,6 +103,14 @@ const AdminDashboard: React.FC = () => {
     navigate(`/admin/courses/${courseId}/edit`);
   };
 
+  const handleView = (courseId: string) => {
+    const course = courses.find(c => c._id === courseId);
+    if (course) {
+      setSelectedCourse(course);
+      setViewModalOpen(true);
+    }
+  };
+
   const handleShare = (courseId: string) => {
     const course = courses.find(c => c._id === courseId);
     const shareLink = `https://elearning.app/course/${courseId}`;
@@ -148,6 +159,7 @@ const AdminDashboard: React.FC = () => {
                   course={course}
                   onEdit={handleEdit}
                   onShare={handleShare}
+                  onView={handleView}
                   onRemoveTag={handleRemoveTag}
                   onPlayVideo={handlePlayVideo}
                   hasVideo={coursesWithVideo.has(course._id)}
@@ -159,6 +171,7 @@ const AdminDashboard: React.FC = () => {
               courses={filteredCourses}
               onEdit={handleEdit}
               onShare={handleShare}
+              onView={handleView}
               onRemoveTag={handleRemoveTag}
             />
           )}
@@ -182,6 +195,18 @@ const AdminDashboard: React.FC = () => {
               }}
               courseId={selectedCourseForVideo._id}
               courseTitle={selectedCourseForVideo.title}
+            />
+          )}
+          
+          {selectedCourse && (
+            <ViewContentModal
+              isOpen={viewModalOpen}
+              onClose={() => {
+                setViewModalOpen(false);
+                setSelectedCourse(null);
+              }}
+              courseId={selectedCourse._id}
+              courseTitle={selectedCourse.title}
             />
           )}
         </main>
