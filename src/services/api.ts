@@ -512,3 +512,89 @@ export const userAPI = {
     return response.json();
   }
 };
+export const participantAPI = {
+  // Get all courses for participant
+  getCourses: async (userId?: string, search?: string) => {
+    let url = `${API_URL}/participant/courses`;
+    const params = new URLSearchParams();
+    
+    if (userId) params.append('userId', userId);
+    if (search) params.append('search', search);
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch courses');
+    }
+
+    return response.json();
+  },
+
+  // Get participant profile
+  getProfile: async (userId: string) => {
+    const response = await fetch(`${API_URL}/participant/profile/${userId}`, {
+      method: 'GET',
+      headers: getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch profile');
+    }
+
+    return response.json();
+  },
+
+  // Enroll in course
+  enrollInCourse: async (courseId: string, userId: string) => {
+    const response = await fetch(`${API_URL}/participant/courses/${courseId}/enroll`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ userId })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to enroll');
+    }
+
+    return response.json();
+  },
+
+  // Process payment
+  processPayment: async (courseId: string, userId: string, paymentId: string, amountPaid: number) => {
+    const response = await fetch(`${API_URL}/participant/courses/${courseId}/pay`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ userId, paymentId, amountPaid })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to process payment');
+    }
+
+    return response.json();
+  },
+
+  // Update course progress
+  updateProgress: async (courseId: string, userId: string, status: string, completionPercentage?: number) => {
+    const response = await fetch(`${API_URL}/participant/courses/${courseId}/progress`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ userId, status, completionPercentage })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update progress');
+    }
+
+    return response.json();
+  }
+};

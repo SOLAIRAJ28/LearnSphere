@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['admin', 'user'],
       default: 'user'
+    },
+    totalPoints: {
+      type: Number,
+      default: 0,
+      min: 0
     }
   },
   {

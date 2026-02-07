@@ -1,5 +1,6 @@
 import React from 'react';
 import logo from '../assets/logo.svg';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   activeTab: string;
@@ -8,6 +9,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
   const tabs = ['Courses', 'Reporting', 'Settings'];
+  const navigate = useNavigate();
 
   return (
     <header className="app-header">
@@ -25,6 +27,12 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
               {tab}
             </button>
           ))}
+          <button
+            className="nav-tab participant-link"
+            onClick={() => navigate('/participant')}
+          >
+            🎓 Participant View
+          </button>
         </nav>
       </div>
     </header>
