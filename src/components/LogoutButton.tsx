@@ -7,6 +7,13 @@ interface LogoutButtonProps {
   className?: string;
 }
 
+const LogoutIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M5 3h6a1 1 0 0 1 0 2H5v14h6a1 1 0 0 1 0 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+    <path d="M16.293 7.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414-1.414L18.586 13H9a1 1 0 0 1 0-2h9.586l-2.293-2.293a1 1 0 0 1 0-1.414z"/>
+  </svg>
+);
+
 const LogoutButton: React.FC<LogoutButtonProps> = ({ variant = 'header', className = '' }) => {
   const onLogout = () => {
     const confirmLogout = window.confirm('Are you sure you want to logout?');
@@ -22,7 +29,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ variant = 'header', classNa
         onClick={onLogout}
         title="Logout"
       >
-        🚪 Logout
+        <LogoutIcon /> Logout
       </button>
     );
   }
@@ -33,7 +40,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ variant = 'header', classNa
         className={`logout-btn logout-dropdown ${className}`}
         onClick={onLogout}
       >
-        <span className="logout-icon">🚪</span>
+        <LogoutIcon />
         <span>Logout</span>
       </button>
     );
@@ -44,7 +51,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ variant = 'header', classNa
       className={`logout-btn logout-button ${className}`}
       onClick={onLogout}
     >
-      Logout
+      <LogoutIcon /> Logout
     </button>
   );
 };

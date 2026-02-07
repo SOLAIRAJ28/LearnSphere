@@ -1,4 +1,5 @@
 import Course from '../models/Course.js';
+import Enrollment from '../models/Enrollment.js';
 import { validationResult } from 'express-validator';
 import fs from 'fs';
 import path from 'path';
@@ -19,11 +20,24 @@ export const getCourses = async (req, res) => {
     }
 
     const courses = await Course.find(query).sort({ createdAt: -1 });
-    
+
+    // Get enrollment counts for all courses
+    const enrollmentCounts = await Enrollment.aggregate([
+      { $group: { _id: '$courseId', count: { $sum: 1 } } }
+    ]);
+    const countMap = {};
+    enrollmentCounts.forEach(e => { countMap[e._id.toString()] = e.count; });
+
+    const coursesWithEnrollments = courses.map(course => {
+      const courseObj = course.toObject();
+      courseObj.viewsCount = countMap[course._id.toString()] || 0;
+      return courseObj;
+    });
+
     res.json({
       success: true,
-      count: courses.length,
-      data: courses
+      count: coursesWithEnrollments.length,
+      data: coursesWithEnrollments
     });
   } catch (error) {
     res.status(500).json({

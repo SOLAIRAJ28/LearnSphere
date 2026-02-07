@@ -52,7 +52,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         
         <div className="course-stats">
           <div className="stat">
-            <span className="stat-label">Views</span>
+            <span className="stat-label">Enrolled</span>
             <span className="stat-value">{course.viewsCount}</span>
           </div>
           <div className="stat">
@@ -98,6 +98,26 @@ const CourseCard: React.FC<CourseCardProps> = ({
           >
             Edit
           </button>
+        </div>
+
+        {/* Course Footer */}
+        <div className="course-footer">
+          <div className="footer-item">
+            <span className="footer-icon">📅</span>
+            <span className="footer-text">{new Date(course.createdAt).toLocaleDateString()}</span>
+          </div>
+          {course.responsible && (
+            <div className="footer-item">
+              <span className="footer-icon">👤</span>
+              <span className="footer-text">{course.responsible}</span>
+            </div>
+          )}
+          {course.visibility && (
+            <div className="footer-item">
+              <span className="footer-icon">👁️</span>
+              <span className="footer-text">{course.visibility === 'everyone' ? 'Public' : 'Signed In'}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

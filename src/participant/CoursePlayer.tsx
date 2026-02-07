@@ -32,6 +32,7 @@ const CoursePlayer: React.FC = () => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Quiz state
@@ -267,6 +268,13 @@ const CoursePlayer: React.FC = () => {
         <div className="cp-progress-bar-container">
           <div className="cp-progress-bar" style={{ width: `${completionPercentage}%` }}></div>
         </div>
+        <button
+          className="cp-sidebar-toggle"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          title={sidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}
+        >
+          {sidebarOpen ? '☰' : '☰'}
+        </button>
       </div>
 
       <div className="cp-main">
@@ -511,7 +519,7 @@ const CoursePlayer: React.FC = () => {
         </div>
 
         {/* Sidebar - Content List */}
-        <div className="cp-sidebar">
+        <div className={`cp-sidebar ${!sidebarOpen ? 'cp-sidebar-hidden' : ''}`}>
           <div className="cp-sidebar-header">
             <h3>Course Content</h3>
             <span className="cp-lesson-count">{completedContents.length}/{contents.length} done</span>

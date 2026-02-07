@@ -3,12 +3,12 @@
 .logout-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 8px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   background: transparent;
@@ -19,7 +19,7 @@
   color: white;
   background: #ef4444;
   border: 1px solid #ef4444;
-  padding: 10px 20px;
+  padding: 14px 28px;
   font-weight: 600;
   box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
@@ -59,7 +59,7 @@
 .logout-button {
   color: white;
   background: #ef4444;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 15px;
 }
 
