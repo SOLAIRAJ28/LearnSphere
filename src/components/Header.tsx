@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from '../assets/logo.svg';
 
 interface HeaderProps {
   activeTab: string;
@@ -12,7 +13,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
     <header className="app-header">
       <div className="header-content">
         <div className="app-branding">
-          <h1 className="app-name">E-Learning</h1>
+          <img src={logo} alt="KEC LearnHub" className="app-logo" />
         </div>
         <nav className="header-nav">
           {tabs.map((tab) => (

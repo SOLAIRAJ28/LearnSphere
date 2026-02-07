@@ -16,35 +16,69 @@
 }
 
 .add-quiz-btn {
-  background: #28a745;
+  background: linear-gradient(135deg, #7cb342 0%, #689f38 100%);
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(124, 179, 66, 0.4);
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-quiz-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.add-quiz-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .add-quiz-btn:hover {
-  background: #22863a;
+  background: linear-gradient(135deg, #689f38 0%, #558b2f 100%);
+  box-shadow: 0 8px 20px rgba(124, 179, 66, 0.5);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .quiz-form {
-  background: #f5f7fa;
+  background: linear-gradient(135deg, rgba(124, 179, 66, 0.05) 0%, rgba(33, 150, 243, 0.05) 100%);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 16px;
   margin-bottom: 20px;
+  border: 2px solid rgba(124, 179, 66, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .quiz-title-input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #e1e4e8;
-  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
   font-size: 14px;
   margin-bottom: 15px;
+  transition: all 0.3s;
+}
+
+.quiz-title-input:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
+  transform: translateY(-1px);
 }
 
 .quiz-list {
@@ -54,20 +88,22 @@
 }
 
 .quiz-item {
-  background: white;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
+  background: linear-gradient(to bottom, white 0%, #fafbfc 100%);
+  border: 2px solid #7cb342;
+  border-radius: 16px;
   padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.2s;
+  transition: all 0.3s;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .quiz-item:hover {
-  border-color: #0366d6;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-color: #2196f3;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .quiz-info {
@@ -95,7 +131,7 @@
   padding: 40px;
   color: #586069;
   background: #f5f7fa;
-  border-radius: 8px;
+  border-radius: 16px;
 }
 
 /* Quiz Editor */
@@ -130,7 +166,7 @@
 /* Questions Sidebar */
 .questions-sidebar {
   background: #f5f7fa;
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 15px;
   display: flex;
   flex-direction: column;
@@ -150,7 +186,7 @@
 }
 
 .add-question-btn {
-  background: #0366d6;
+  background: linear-gradient(135deg, #2196f3 0%, #1e88e5 100%);
   color: white;
   border: none;
   padding: 6px 12px;
@@ -158,11 +194,13 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
 }
 
 .add-question-btn:hover {
-  background: #0256b9;
+  background: linear-gradient(135deg, #1e88e5 0%, #1976d2 100%);
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
 }
 
 .questions-list {
@@ -177,7 +215,7 @@
 .question-item {
   background: white;
   border: 1px solid #e1e4e8;
-  border-radius: 6px;
+  border-radius: 12px;
   padding: 12px;
   cursor: pointer;
   transition: all 0.2s;
@@ -187,13 +225,13 @@
 }
 
 .question-item:hover {
-  border-color: #0366d6;
+  border-color: #2196f3;
 }
 
 .question-item.active {
-  background: #0366d6;
+  background: #2196f3;
   color: white;
-  border-color: #0366d6;
+  border-color: #2196f3;
 }
 
 .question-item span {
@@ -229,7 +267,7 @@
   background: white;
   border: 1px solid #e1e4e8;
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -238,15 +276,15 @@
 }
 
 .rewards-btn:hover {
-  border-color: #0366d6;
-  color: #0366d6;
+  border-color: #2196f3;
+  color: #2196f3;
 }
 
 /* Question Editor */
 .question-editor {
   background: white;
   border: 1px solid #e1e4e8;
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 25px;
 }
 
@@ -273,7 +311,7 @@
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #e1e4e8;
-  border-radius: 6px;
+  border-radius: 12px;
   font-size: 14px;
   font-family: inherit;
   resize: vertical;
@@ -284,14 +322,15 @@
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #e1e4e8;
-  border-radius: 6px;
+  border-radius: 12px;
   font-size: 14px;
 }
 
 .form-group textarea:focus,
 .form-group input:focus {
   outline: none;
-  border-color: #0366d6;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
 /* Answers */
@@ -319,13 +358,14 @@
   flex: 1;
   padding: 10px 12px;
   border: 1px solid #e1e4e8;
-  border-radius: 6px;
+  border-radius: 12px;
   font-size: 14px;
 }
 
 .answer-item input[type="text"]:focus {
   outline: none;
-  border-color: #0366d6;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
 .remove-answer {
@@ -334,7 +374,7 @@
   border: none;
   width: 30px;
   height: 30px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 18px;
   display: flex;
@@ -352,7 +392,7 @@
   background: #f5f7fa;
   border: 1px dashed #d1d5da;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 13px;
   color: #586069;
@@ -360,8 +400,8 @@
 }
 
 .add-answer-btn:hover {
-  border-color: #0366d6;
-  color: #0366d6;
+  border-color: #2196f3;
+  color: #2196f3;
   background: white;
 }
 
@@ -372,19 +412,22 @@
 }
 
 .btn-primary {
-  background: #0366d6;
+  background: linear-gradient(135deg, #2196f3 0%, #1e88e5 100%);
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
 }
 
 .btn-primary:hover {
-  background: #0256b9;
+  background: linear-gradient(135deg, #1e88e5 0%, #1976d2 100%);
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -392,7 +435,7 @@
   color: #24292e;
   border: 1px solid #e1e4e8;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -408,7 +451,7 @@
   background: white;
   border: 1px solid #e1e4e8;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
   color: #24292e;
@@ -434,7 +477,7 @@
 }
 
 .action-icon.edit {
-  color: #0366d6;
+  color: #2196f3;
 }
 
 .action-icon.delete {
