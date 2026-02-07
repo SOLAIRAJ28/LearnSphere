@@ -1,6 +1,5 @@
 import React from 'react';
 import type { Course } from '../types/course';
-import { formatDuration } from '../utils/helpers';
 
 interface CourseCardProps {
   course: Course;
@@ -21,7 +20,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
 
   return (
     <div className="course-card">
-      {course.isPublished && <div className="published-badge">Published</div>}
+      {course.published && <div className="published-badge">Published</div>}
       
       {imageUrl && (
         <div className="course-image">
@@ -38,7 +37,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
               {tag}
               <button
                 className="tag-remove"
-                onClick={() => onRemoveTag(course._id, tag)}
+                onClick={() => onRemoveTag(course.id, tag)}
                 title="Remove tag"
               >
                 ×
@@ -50,28 +49,28 @@ const CourseCard: React.FC<CourseCardProps> = ({
         <div className="course-stats">
           <div className="stat">
             <span className="stat-label">Views</span>
-            <span className="stat-value">{course.viewsCount}</span>
+            <span className="stat-value">{course.views}</span>
           </div>
           <div className="stat">
             <span className="stat-label">Contents</span>
-            <span className="stat-value">{course.lessonsCount}</span>
+            <span className="stat-value">{course.contents}</span>
           </div>
           <div className="stat">
             <span className="stat-label">Duration</span>
-            <span className="stat-value">{formatDuration(course.totalDuration)}</span>
+            <span className="stat-value">{course.duration}</span>
           </div>
         </div>
         
         <div className="course-actions">
           <button
             className="action-btn share-btn"
-            onClick={() => onShare(course._id)}
+            onClick={() => onShare(course.id)}
           >
             Share
           </button>
           <button
             className="action-btn edit-btn"
-            onClick={() => onEdit(course._id)}
+            onClick={() => onEdit(course.id)}
           >
             Edit
           </button>

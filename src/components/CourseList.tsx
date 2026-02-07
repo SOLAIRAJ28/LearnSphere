@@ -1,6 +1,5 @@
 import React from 'react';
 import type { Course } from '../types/course';
-import { formatDuration } from '../utils/helpers';
 
 interface CourseListProps {
   courses: Course[];
@@ -31,7 +30,7 @@ const CourseList: React.FC<CourseListProps> = ({
         </thead>
         <tbody>
           {courses.map((course) => (
-            <tr key={course._id}>
+            <tr key={course.id}>
               <td>
                 <span className="course-title-link">{course.title}</span>
               </td>
@@ -42,7 +41,7 @@ const CourseList: React.FC<CourseListProps> = ({
                       {tag}
                       <button
                         className="tag-remove"
-                        onClick={() => onRemoveTag(course._id, tag)}
+                        onClick={() => onRemoveTag(course.id, tag)}
                         title="Remove tag"
                       >
                         ×
@@ -51,11 +50,11 @@ const CourseList: React.FC<CourseListProps> = ({
                   ))}
                 </div>
               </td>
-              <td>{course.viewsCount}</td>
-              <td>{course.lessonsCount}</td>
-              <td>{formatDuration(course.totalDuration)}</td>
+              <td>{course.views}</td>
+              <td>{course.contents}</td>
+              <td>{course.duration}</td>
               <td>
-                {course.isPublished && (
+                {course.published && (
                   <span className="status-badge published">Published</span>
                 )}
               </td>
@@ -63,13 +62,13 @@ const CourseList: React.FC<CourseListProps> = ({
                 <div className="table-actions">
                   <button
                     className="action-btn share-btn"
-                    onClick={() => onShare(course._id)}
+                    onClick={() => onShare(course.id)}
                   >
                     Share
                   </button>
                   <button
                     className="action-btn edit-btn"
-                    onClick={() => onEdit(course._id)}
+                    onClick={() => onEdit(course.id)}
                   >
                     Edit
                   </button>

@@ -1,30 +1,11 @@
 export interface Course {
-  _id: string;
+  id: string;
   title: string;
-  description?: string;
   tags: string[];
-  responsible?: string;
-  imageUrl?: string;
-  viewsCount: number;
-  lessonsCount: number;
-  totalDuration: number; // in minutes
-  isPublished: boolean;
-  shareLink?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface Content {
-  _id: string;
-  courseId: string;
-  title: string;
-  category: 'Video' | 'Document' | 'Quiz' | 'Article' | 'Other';
-  duration: number;
-  order: number;
-  url?: string;
-  description?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  views: number;
+  contents: number;
+  duration: string; // Format: HH:MM
+  published: boolean;
 }
 
 export interface Answer {
@@ -59,11 +40,3 @@ export interface Quiz {
 }
 
 export type ViewMode = 'kanban' | 'list';
-
-export interface User {
-  _id: string;
-  username: string;
-  email: string;
-  role: 'admin' | 'user';
-  token: string;
-}
