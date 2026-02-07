@@ -1,5 +1,7 @@
 import Course from '../models/Course.js';
 import { validationResult } from 'express-validator';
+import fs from 'fs';
+import path from 'path';
 
 // @desc    Get all courses
 // @route   GET /api/courses
@@ -256,6 +258,62 @@ export const generateShareLink = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error generating share link',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Upload course image
+// @route   PUT /api/courses/:id/image
+// @access  Public (temporarily)
+export const uploadCourseImage = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+
+    if (!course) {
+      // If upload failed and file was uploaded, delete it
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found'
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please upload an image file'
+      });
+    }
+
+    // Delete old image if exists
+    if (course.imageUrl && course.imageUrl.startsWith('/uploads/')) {
+      const oldImagePath = path.join(process.cwd(), course.imageUrl);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+    }
+
+    // Save new image URL (relative path for serving)
+    course.imageUrl = `/uploads/courses/${req.file.filename}`;
+    await course.save();
+
+    res.json({
+      success: true,
+      message: 'Image uploaded successfully',
+      data: course
+    });
+  } catch (error) {
+    // If error occurs, delete uploaded file
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading image',
       error: error.message
     });
   }

@@ -15,9 +15,19 @@ const CourseCard: React.FC<CourseCardProps> = ({
   onShare,
   onRemoveTag,
 }) => {
+  const imageUrl = course.imageUrl 
+    ? (course.imageUrl.startsWith('http') ? course.imageUrl : `http://localhost:5000${course.imageUrl}`)
+    : '';
+
   return (
     <div className="course-card">
       {course.isPublished && <div className="published-badge">Published</div>}
+      
+      {imageUrl && (
+        <div className="course-image">
+          <img src={imageUrl} alt={course.title} />
+        </div>
+      )}
       
       <div className="course-content">
         <h3 className="course-title">{course.title}</h3>

@@ -144,6 +144,28 @@ export const courseAPI = {
     }
     
     return response.json();
+  },
+
+  // Upload course image
+  uploadCourseImage: async (courseId: string, imageFile: File) => {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    const response = await fetch(`${API_URL}/courses/${courseId}/image`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        // Don't set Content-Type - let browser set it with boundary for multipart
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to upload image');
+    }
+
+    return response.json();
   }
 };
 

@@ -8,9 +8,11 @@ import {
   deleteCourse,
   updateCourseTags,
   togglePublishCourse,
-  generateShareLink
+  generateShareLink,
+  uploadCourseImage
 } from '../controllers/courseController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
+import upload from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -33,6 +35,7 @@ router.delete('/:id', deleteCourse);
 router.put('/:id/tags', updateCourseTags);
 router.put('/:id/publish', togglePublishCourse);
 router.post('/:id/share', generateShareLink);
+router.put('/:id/image', upload.single('image'), uploadCourseImage);
 
 // Protected routes (uncomment when authentication UI is ready)
 // router.post('/', protect, admin, courseValidation, createCourse);
@@ -41,5 +44,6 @@ router.post('/:id/share', generateShareLink);
 // router.put('/:id/tags', protect, admin, updateCourseTags);
 // router.put('/:id/publish', protect, admin, togglePublishCourse);
 // router.post('/:id/share', protect, admin, generateShareLink);
+// router.put('/:id/image', protect, admin, upload.single('image'), uploadCourseImage);
 
 export default router;

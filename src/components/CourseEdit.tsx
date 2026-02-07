@@ -30,6 +30,11 @@ const CourseEdit: React.FC = () => {
   const [contentCategory, setContentCategory] = useState<'Video' | 'Document' | 'Quiz' | 'Article' | 'Other'>('Document');
   const [contentDuration, setContentDuration] = useState('');
   const [editingContent, setEditingContent] = useState<Content | null>(null);
+  
+  // Image upload states
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -49,6 +54,15 @@ const CourseEdit: React.FC = () => {
       setResponsible(courseData.responsible || '');
       setDescription(courseData.description || '');
       setImageUrl(courseData.imageUrl || '');
+      
+      // Set image preview if course has an image
+      if (courseData.imageUrl) {
+        const fullImageUrl = courseData.imageUrl.startsWith('http') 
+          ? courseData.imageUrl 
+          : `http://localhost:5000${courseData.imageUrl}`;
+        setImagePreview(fullImageUrl);
+      }
+      setImageUrl(courseData.imageUrl || '');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -62,6 +76,61 @@ const CourseEdit: React.FC = () => {
       setContents(response.data);
     } catch (err: any) {
       console.error('Error fetching contents:', err);
+    }
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please select a valid image file (JPG, JPEG, PNG, or WEBP)');
+      return;
+    }
+
+    // Validate file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image size must be less than 2MB');
+      return;
+    }
+
+    setImageFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUploadImage = async () => {
+    if (!imageFile) {
+      alert('Please select an image first');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const response = await courseAPI.uploadCourseImage(id!, imageFile);
+      
+      // Update course data with new image URL
+      const fullImageUrl = response.data.imageUrl.startsWith('http')
+        ? response.data.imageUrl
+        : `http://localhost:5000${response.data.imageUrl}`;
+      
+      setImageUrl(response.data.imageUrl);
+      setImagePreview(fullImageUrl);
+      setImageFile(null);
+      
+      alert('Image uploaded successfully!');
+      await fetchCourseData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to upload image');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -200,17 +269,40 @@ const CourseEdit: React.FC = () => {
           <div className="info-right">
             <div className="course-image-section">
               <label>Course Image</label>
-              {imageUrl && (
+              {imagePreview && (
                 <div className="image-preview">
-                  <img src={imageUrl} alt="Course" />
+                  <img src={imagePreview} alt="Course" />
                 </div>
               )}
-              <input
-                type="text"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="Enter image URL"
-              />
+              {!imagePreview && (
+                <div className="image-preview empty">
+                  <span>No image uploaded</span>
+                </div>
+              )}
+              <div className="image-upload-controls">
+                <input
+                  type="file"
+                  id="image-upload"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={handleImageSelect}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="image-upload" className="upload-btn">
+                  Choose File
+                </label>
+                {imageFile && (
+                  <button
+                    className="btn-upload-image"
+                    onClick={handleUploadImage}
+                    disabled={uploadingImage}
+                  >
+                    {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                  </button>
+                )}
+              </div>
+              {imageFile && (
+                <p className="selected-file">Selected: {imageFile.name}</p>
+              )}
             </div>
           </div>
         </div>
