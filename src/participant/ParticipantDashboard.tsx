@@ -201,14 +201,14 @@ const ParticipantDashboard: React.FC = () => {
 
   const getBadgeColor = (badge: string) => {
     const colors: { [key: string]: string } = {
-      'Newbie': '#9e9e9e',
+      'Newbie': '#4caf50',
       'Explorer': '#2196f3',
-      'Achiever': '#4caf50',
-      'Specialist': '#ff9800',
+      'Achiever': '#ff9800',
+      'Specialist': '#9c27b0',
       'Expert': '#f44336',
-      'Master': '#9c27b0'
+      'Master': '#ffd700'
     };
-    return colors[badge] || '#9e9e9e';
+    return colors[badge] || '#4caf50';
   };
 
   if (loading) {
@@ -221,7 +221,8 @@ const ParticipantDashboard: React.FC = () => {
       <header className="participant-header">
         <div className="header-content">
           <div className="logo">
-            <img src={logo} alt="KEC LearnHub" className="app-logo" />
+            <img src={logo} alt="LearnSphere" className="app-logo" />
+            <span className="logo-text">LearnSphere</span>
           </div>
           
           <div className="search-bar">

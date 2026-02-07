@@ -39,13 +39,6 @@ const CourseCard: React.FC<CourseCardProps> = ({
           {course.tags.map((tag, index) => (
             <span key={index} className="tag">
               {tag}
-              <button
-                className="tag-remove"
-                onClick={() => onRemoveTag(course._id, tag)}
-                title="Remove tag"
-              >
-                ×
-              </button>
             </span>
           ))}
         </div>
@@ -72,7 +65,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
               onClick={() => onPlayVideo(course._id)}
               title="Play course video"
               style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
                 color: 'white',
                 border: 'none',
               }}

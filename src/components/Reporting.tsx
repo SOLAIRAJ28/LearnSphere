@@ -229,15 +229,19 @@ const Reporting: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  enrollments.map((enrollment) => (
-                    <tr key={enrollment._id}>
-                      <td>{enrollment.courseId?.title || 'N/A'}</td>
-                      <td>{enrollment.userId?.name || enrollment.userId?.username || 'N/A'}</td>
-                      <td>{formatDate(enrollment.enrolledAt)}</td>
-                      <td>{formatDate(enrollment.startedAt)}</td>
-                      <td>{formatTimeSpent(enrollment.timeSpent)}</td>
-                      <td>
-                        <div className="completion-cell">
+                  enrollments.map((enrollment) => {
+                    const courseName = enrollment.courseId?.title || 'N/A';
+                    const participantName = enrollment.userId?.name || enrollment.userId?.username || 'N/A';
+                    
+                    return (
+                      <tr key={enrollment._id}>
+                        <td title={courseName}>{courseName}</td>
+                        <td title={participantName}>{participantName}</td>
+                        <td>{formatDate(enrollment.enrolledAt)}</td>
+                        <td>{formatDate(enrollment.startedAt)}</td>
+                        <td>{formatTimeSpent(enrollment.timeSpent)}</td>
+                        <td>
+                          <div className="completion-cell">
                           <div className="progress-bar">
                             <div
                               className="progress-fill"
@@ -256,7 +260,8 @@ const Reporting: React.FC = () => {
                         </span>
                       </td>
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>

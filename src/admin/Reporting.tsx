@@ -262,11 +262,13 @@ const Reporting: React.FC = () => {
                     const userPoints = enrollment.userId?.totalPoints || 0;
                     const userBadge = getBadge(userPoints);
                     const badgeColor = getBadgeColor(userBadge);
+                    const courseName = enrollment.courseId?.title || 'N/A';
+                    const participantName = enrollment.userId?.name || enrollment.userId?.username || 'N/A';
                     
                     return (
                       <tr key={enrollment._id}>
-                        <td>{enrollment.courseId?.title || 'N/A'}</td>
-                        <td>{enrollment.userId?.name || enrollment.userId?.username || 'N/A'}</td>
+                        <td title={courseName}>{courseName}</td>
+                        <td title={participantName}>{participantName}</td>
                         <td>
                           <div className="points-badge-cell">
                             <div className="points-display">

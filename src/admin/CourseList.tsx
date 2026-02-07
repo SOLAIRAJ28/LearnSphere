@@ -65,18 +65,21 @@ const CourseList: React.FC<CourseListProps> = ({
                   <button
                     className="action-btn view-btn"
                     onClick={() => onView(course._id)}
+                    title="View course details"
                   >
                     View
                   </button>
                   <button
                     className="action-btn share-btn"
                     onClick={() => onShare(course._id)}
+                    title="Share this course"
                   >
                     Share
                   </button>
                   <button
                     className="action-btn edit-btn"
                     onClick={() => onEdit(course._id)}
+                    title="Edit course"
                   >
                     Edit
                   </button>

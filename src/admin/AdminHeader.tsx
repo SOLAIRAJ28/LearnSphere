@@ -15,6 +15,7 @@ const AdminHeader: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
       <div className="header-content">
         <div className="app-branding">
           <img src={logo} alt="LearnSphere Admin" className="app-logo" />
+          <span className="app-name">LearnSphere</span>
           <span className="admin-badge">Admin</span>
         </div>
         <nav className="header-nav">

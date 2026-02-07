@@ -434,8 +434,8 @@
 /* Dashboard Certificate Button */
 .cert-dashboard-btn {
   padding: 8px 16px;
-  background: linear-gradient(135deg, #c9a84c, #daa520);
-  color: #1a1a2e;
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: white;
   border: none;
   border-radius: 6px;
   font-size: 13px;
@@ -449,7 +449,7 @@
 
 .cert-dashboard-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
 }
 
 /* ===========================

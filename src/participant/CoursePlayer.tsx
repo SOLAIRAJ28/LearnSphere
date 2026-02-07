@@ -4,6 +4,7 @@ import { contentAPI, courseAPI, participantAPI, quizAPI } from '../services/api'
 import { getCurrentUser } from '../utils/auth';
 import type { Content } from '../types/course';
 import Certificate from './Certificate';
+import QuizPrivacyMode from './QuizPrivacyMode';
 import '../styles/CoursePlayer.css';
 import '../styles/Certificate.css';
 
@@ -142,6 +143,46 @@ const CoursePlayer: React.FC = () => {
     setQuizScore({ correct: 0, total: 0, passed: false });
   };
 
+  const handleQuizCancel = () => {
+    setShowQuiz(false);
+    setActiveQuiz(null);
+    setSelectedAnswers({});
+  };
+
+  const handleQuizSubmit = async (answers: { [questionId: string]: string }) => {
+    if (!activeQuiz || !courseId || !userId) return;
+
+    setSelectedAnswers(answers);
+    const questions = activeQuiz.questions || [];
+    let correct = 0;
+
+    questions.forEach((q: any) => {
+      const selectedOptId = answers[q._id];
+      if (selectedOptId) {
+        const selectedOpt = q.options.find((o: any) => o._id === selectedOptId);
+        if (selectedOpt?.isCorrect) correct++;
+      }
+    });
+
+    const total = questions.length;
+    const passed = correct >= Math.ceil(total / 2);
+
+    setQuizScore({ correct, total, passed });
+    setQuizSubmitted(true);
+    setShowQuiz(false);
+
+    // If passed and quiz not already completed, update progress
+    if (passed && !quizCompleted) {
+      try {
+        const res = await participantAPI.completeQuiz(courseId, userId);
+        const data = res.data || res;
+        handleProgressUpdate(data);
+      } catch (err) {
+        console.error('Error completing quiz:', err);
+      }
+    }
+  };
+
   const handleSelectAnswer = (questionId: string, optionId: string) => {
     if (quizSubmitted) return;
     setSelectedAnswers(prev => ({ ...prev, [questionId]: optionId }));
@@ -183,6 +224,7 @@ const CoursePlayer: React.FC = () => {
     setQuizSubmitted(false);
     setSelectedAnswers({});
     setQuizScore({ correct: 0, total: 0, passed: false });
+    setShowQuiz(true);
   };
 
   const handleBack = () => {
@@ -636,6 +678,58 @@ const CoursePlayer: React.FC = () => {
           completionDate={new Date().toISOString()}
           onClose={() => setShowCertificate(false)}
         />
+      )}
+
+      {/* Quiz Privacy Mode */}
+      {showQuiz && activeQuiz && !quizSubmitted && (
+        <QuizPrivacyMode
+          quiz={activeQuiz}
+          onSubmit={handleQuizSubmit}
+          onCancel={handleQuizCancel}
+          alreadyPassed={quizCompleted}
+        />
+      )}
+
+      {/* Quiz Results Modal */}
+      {quizSubmitted && (
+        <div className="qpm-overlay">
+          <div className="cp-quiz-results-modal">
+            <div className={`cp-quiz-result-card ${quizScore.passed ? 'passed' : 'failed'}`}>
+              <div className="cp-quiz-result-icon">{quizScore.passed ? '🎉' : '😞'}</div>
+              <h3 className="cp-quiz-result-title">
+                {quizScore.passed ? 'Congratulations! You Passed!' : 'Not Passed'}
+              </h3>
+              <div className="cp-quiz-result-score">
+                <span className="cp-quiz-score-number">{quizScore.correct}</span>
+                <span className="cp-quiz-score-divider">/</span>
+                <span className="cp-quiz-score-total">{quizScore.total}</span>
+              </div>
+              <p className="cp-quiz-result-text">
+                {quizScore.passed
+                  ? `You got ${quizScore.correct} out of ${quizScore.total} correct. Well done!`
+                  : `You need at least ${Math.ceil(quizScore.total / 2)} correct answers to pass. You got ${quizScore.correct}.`}
+              </p>
+
+              <div className="cp-quiz-result-actions">
+                {!quizScore.passed && (
+                  <button className="qpm-btn qpm-btn-start" onClick={handleRetakeQuiz}>
+                    🔄 Retake Quiz
+                  </button>
+                )}
+                <button 
+                  className="qpm-btn qpm-btn-cancel" 
+                  onClick={() => {
+                    setQuizSubmitted(false);
+                    setShowQuiz(false);
+                    if (contents.length > 0) setSelectedContent(contents[0]);
+                  }}
+                >
+                  ← Back to Content
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
