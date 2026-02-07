@@ -5,7 +5,6 @@ interface CourseListProps {
   courses: Course[];
   onEdit: (courseId: string) => void;
   onShare: (courseId: string) => void;
-  onView: (courseId: string) => void;
   onRemoveTag: (courseId: string, tag: string) => void;
 }
 
@@ -13,7 +12,6 @@ const CourseList: React.FC<CourseListProps> = ({
   courses,
   onEdit,
   onShare,
-  onView,
   onRemoveTag,
 }) => {
   return (
@@ -62,12 +60,6 @@ const CourseList: React.FC<CourseListProps> = ({
               </td>
               <td>
                 <div className="table-actions">
-                  <button
-                    className="action-btn view-btn"
-                    onClick={() => onView(course._id)}
-                  >
-                    View
-                  </button>
                   <button
                     className="action-btn share-btn"
                     onClick={() => onShare(course._id)}

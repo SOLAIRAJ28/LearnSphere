@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Course, Content } from '../types/course';
 import { courseAPI, contentAPI, userAPI } from '../services/api';
-import Header from './Header';
+import AdminHeader from './AdminHeader';
 import QuizManager from './QuizManager';
 import '../styles/CourseEdit.css';
 
@@ -352,11 +352,11 @@ const CourseEdit: React.FC = () => {
 
   return (
     <div className="course-edit-page">
-      <Header activeTab="Courses" onTabChange={() => navigate('/')} />
+      <AdminHeader activeTab="Courses" onTabChange={() => navigate('/admin/courses')} />
       
       <div className="course-edit-container">
         <div className="course-edit-header">
-          <button className="back-btn" onClick={() => navigate('/')}>
+          <button className="back-btn" onClick={() => navigate('/admin/courses')}>
             ← Back to Courses
           </button>
           <div className="header-actions">
@@ -661,14 +661,11 @@ const CourseEdit: React.FC = () => {
                                 <div className="form-group">
                                   <label>Video Link *</label>
                                   <input
-                                    type="text"
+                                    type="url"
                                     value={contentUrl}
                                     onChange={(e) => setContentUrl(e.target.value)}
-                                    placeholder="YouTube URL or filename (e.g., Machine_Learning_Course_for_Beginners_720P.mp4)"
+                                    placeholder="https://youtube.com/watch?v=..."
                                   />
-                                  <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                                    For local videos: Put video file in <strong>public</strong> folder and enter filename only
-                                  </small>
                                 </div>
                                 <div className="form-group">
                                   <label>Duration (in minutes) *</label>
@@ -688,16 +685,19 @@ const CourseEdit: React.FC = () => {
                             {contentCategory === 'document' && (
                               <>
                                 <div className="form-group">
-                                  <label>Document Link *</label>
+                                  <label>Document File *</label>
                                   <input
-                                    type="text"
-                                    value={contentUrl}
-                                    onChange={(e) => setContentUrl(e.target.value)}
-                                    placeholder="Document URL or filename (e.g., course-notes.pdf)"
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,.txt"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        // For now, store filename; in production, upload to server
+                                        setContentUrl(file.name);
+                                      }
+                                    }}
                                   />
-                                  <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                                    For local PDFs: Put file in <strong>public</strong> folder and enter filename only
-                                  </small>
+                                  {contentUrl && <small className="file-name">Selected: {contentUrl}</small>}
                                 </div>
                                 <div className="form-group">
                                   <label className="checkbox-label">

@@ -1,0 +1,460 @@
+/* Participant Dashboard Styles */
+.participant-dashboard {
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+/* Header */
+.participant-header {
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.participant-header .header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.participant-header .logo h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #7c3aed;
+  margin: 0;
+}
+
+.participant-header .search-bar {
+  flex: 1;
+  max-width: 600px;
+}
+
+.participant-header .search-bar input {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.participant-header .search-bar input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.participant-header .user-section {
+  margin-left: auto;
+}
+
+.participant-header .user-info {
+  display: flex;
+  align-items: center;
+  gap:12px;
+}
+
+.participant-header .user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.participant-header .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.participant-header .sign-in-btn {
+  padding: 8px 20px;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.participant-header .sign-in-btn:hover {
+  background: #6d28d9;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+}
+
+/* Courses Section */
+.courses-section {
+  min-height: 400px;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+}
+
+.no-courses {
+  background: white;
+  border-radius: 12px;
+  padding: 60px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* Course Card */
+.course-card-participant {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-card-participant:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+}
+
+.course-labels {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+}
+
+.label {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+
+.paid-label {
+  background: rgba(76, 175, 80, 0.9);
+  color: white;
+}
+
+.progress-label {
+  background: rgba(33, 150, 243, 0.9);
+  color: white;
+}
+
+.course-image-participant {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: #f5f7fa;
+}
+
+.course-image-participant img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-content-participant {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.course-title-participant {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+.course-tags-participant {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-participant {
+  padding: 4px 10px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.course-stats-participant {
+  display: flex;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+}
+
+.stat-item svg {
+  color: #999;
+}
+
+.course-action {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.join-btn {
+  background: #7c3aed;
+  color: white;
+}
+
+.join-btn:hover {
+  background: #6d28d9;
+  transform: scale(1.02);
+}
+
+.continue-btn {
+  background: #2196f3;
+  color: white;
+}
+
+.continue-btn:hover {
+  background: #1976d2;
+  transform: scale(1.02);
+}
+
+.buy-btn {
+  background: #ff9800;
+  color: white;
+}
+
+.buy-btn:hover {
+  background: #f57c00;
+  transform: scale(1.02);
+}
+
+.completed-btn {
+  background: #4caf50;
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Profile Sidebar */
+.profile-sidebar {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.profile-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+/* Circular Progress */
+.progress-circle {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 24px;
+}
+
+.progress-circle svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.points-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.points-label {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Badge Display */
+.badge-display {
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Profile Stats */
+.profile-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-row .stat-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.stat-row .stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #7c3aed;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-sidebar {
+    position: static;
+    order: -1;
+  }
+
+  .profile-card {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .participant-header .header-content {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .participant-header .search-bar {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-container {
+    padding: 16px;
+    gap: 16px;
+  }
+}

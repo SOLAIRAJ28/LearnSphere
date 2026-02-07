@@ -46,6 +46,18 @@ body {
   gap: 0.5rem;
 }
 
+.admin-badge {
+  background: linear-gradient(135deg, #7cb342 0%, #558b2f 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+}
+
 .app-logo {
   height: 40px;
   width: auto;
@@ -83,6 +95,17 @@ body {
   color: #fff;
   font-weight: 500;
   border-bottom: 2px solid #7cb342;
+}
+
+.nav-tab.participant-link {
+  background-color: #7c3aed;
+  color: white;
+  margin-left: 16px;
+}
+
+.nav-tab.participant-link:hover {
+  background-color: #6d28d9;
+  color: white;
 }
 
 /* Dashboard Content */
@@ -411,6 +434,19 @@ body {
   border-color: #2196f3;
   color: white;
   box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  transform: translateY(-2px);
+}
+
+.view-btn {
+  color: #666;
+  border-color: #e0e0e0;
+}
+
+.view-btn:hover {
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+  border-color: #9c27b0;
+  color: white;
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
   transform: translateY(-2px);
 }
 

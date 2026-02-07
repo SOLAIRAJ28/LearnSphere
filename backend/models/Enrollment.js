@@ -39,6 +39,18 @@ const enrollmentSchema = new mongoose.Schema(
       type: String,
       enum: ['Yet to Start', 'In Progress', 'Completed'],
       default: 'Yet to Start'
+    },
+    isPaid: {
+      type: Boolean,
+      default: false
+    },
+    paymentId: {
+      type: String,
+      default: null
+    },
+    amountPaid: {
+      type: Number,
+      default: 0
     }
   },
   {
