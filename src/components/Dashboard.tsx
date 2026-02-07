@@ -1,88 +1,96 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Course, ViewMode } from '../types/course';
 import Header from './Header';
 import SearchAndControls from './SearchAndControls';
 import CourseCard from './CourseCard';
 import CourseList from './CourseList';
 import CreateCourseModal from './CreateCourseModal';
-
-// Sample initial courses
-const initialCourses: Course[] = [
-  {
-    id: '1',
-    title: 'Introduction to Odoo AI',
-    tags: ['tag1', 'tag2', 'tag3'],
-    views: 5,
-    contents: 15,
-    duration: '25:30',
-    published: true,
-  },
-  {
-    id: '2',
-    title: 'Basics of Odoo CRM',
-    tags: ['tag1', 'tag2', 'tag3'],
-    views: 20,
-    contents: 20,
-    duration: '20:35',
-    published: true,
-  },
-  {
-    id: '3',
-    title: 'About Odoo Courses',
-    tags: ['tag1', 'tag2', 'tag3'],
-    views: 10,
-    contents: 10,
-    duration: '10:20',
-    published: true,
-  },
-];
+import { courseAPI } from '../services/api';
 
 const Dashboard: React.FC = () => {
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState<Course[]>([]);
   const [activeTab, setActiveTab] = useState('Courses');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Filter courses based on search query
+  // Fetch courses from backend
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await courseAPI.getAllCourses(searchQuery);
+      setCourses(response.data);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch courses');
+      console.error('Error fetching courses:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  // Search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchCourses();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Filter courses locally (already filtered by backend, but keep for real-time updates)
   const filteredCourses = useMemo(() => {
     return courses.filter((course) =>
       course.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [courses, searchQuery]);
 
-  const handleCreateCourse = (courseName: string) => {
-    const newCourse: Course = {
-      id: Date.now().toString(),
-      title: courseName,
-      tags: [],
-      views: 0,
-      contents: 0,
-      duration: '00:00',
-      published: false,
-    };
-    setCourses([...courses, newCourse]);
+  const handleCreateCourse = async (courseName: string) => {
+    try {
+      await courseAPI.createCourse({ title: courseName });
+      await fetchCourses(); // Refresh the list
+    } catch (err: any) {
+      alert(err.message || 'Failed to create course');
+    }
   };
 
   const handleEdit = (courseId: string) => {
-    alert(`Edit course: ${courseId}\n\nThis will open the course form where you can configure contents and course details.`);
+    navigate(`/courses/${courseId}/edit`);
   };
 
-  const handleShare = (courseId: string) => {
-    const course = courses.find(c => c.id === courseId);
-    const shareLink = `https://elearning.app/course/${courseId}`;
-    navigator.clipboard.writeText(shareLink);
-    alert(`Course link copied to clipboard:\n${shareLink}\n\nShare this link with specific people to give them access to "${course?.title}".`);
+  const handleShare = async (courseId: string) => {
+    try {
+      const response = await courseAPI.generateShareLink(courseId);
+      const shareLink = response.data.shareLink;
+      
+      await navigator.clipboard.writeText(shareLink);
+      
+      const course = courses.find(c => c._id === courseId);
+      alert(`Course link copied to clipboard:\n${shareLink}\n\nShare this link with specific people to give them access to "${course?.title}".`);
+      
+      // Refresh courses to update shareLink
+      await fetchCourses();
+    } catch (err: any) {
+      alert(err.message || 'Failed to generate share link');
+    }
   };
 
-  const handleRemoveTag = (courseId: string, tag: string) => {
-    setCourses(
-      courses.map((course) =>
-        course.id === courseId
-          ? { ...course, tags: course.tags.filter((t) => t !== tag) }
-          : course
-      )
-    );
+  const handleRemoveTag = async (courseId: string, tag: string) => {
+    try {
+      await courseAPI.updateTags(courseId, tag, 'remove');
+      await fetchCourses(); // Refresh the list
+    } catch (err: any) {
+      alert(err.message || 'Failed to remove tag');
+    }
   };
 
   return (
@@ -98,25 +106,36 @@ const Dashboard: React.FC = () => {
             onViewModeChange={setViewMode}
           />
           
-          {viewMode === 'kanban' ? (
-            <div className="courses-kanban">
-              {filteredCourses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
+          {loading && <div className="loading">Loading courses...</div>}
+          {error && <div className="error-message">{error}</div>}
+          
+          {!loading && !error && (
+            <>
+              {viewMode === 'kanban' ? (
+                <div className="courses-kanban">
+                  {filteredCourses.map((course) => (
+                    <CourseCard
+                      key={course._id}
+                      course={course}
+                      onEdit={handleEdit}
+                      onShare={handleShare}
+                      onRemoveTag={handleRemoveTag}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <CourseList
+                  courses={filteredCourses}
                   onEdit={handleEdit}
                   onShare={handleShare}
                   onRemoveTag={handleRemoveTag}
                 />
-              ))}
-            </div>
-          ) : (
-            <CourseList
-              courses={filteredCourses}
-              onEdit={handleEdit}
-              onShare={handleShare}
-              onRemoveTag={handleRemoveTag}
-            />
+              )}
+            </>
+          )}
+          
+          {!loading && !error && filteredCourses.length === 0 && (
+            <div className="no-courses">No courses found</div>
           )}
           
           <button className="fab" onClick={() => setIsModalOpen(true)}>
