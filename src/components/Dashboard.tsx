@@ -1,48 +1,44 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Course, ViewMode } from '../types/course';
+import { courseAPI } from '../services/api';
 import Header from './Header';
 import SearchAndControls from './SearchAndControls';
 import CourseCard from './CourseCard';
 import CourseList from './CourseList';
 import CreateCourseModal from './CreateCourseModal';
 
-// Sample initial courses
-const initialCourses: Course[] = [
-  {
-    id: '1',
-    title: 'Introduction to Odoo AI',
-    tags: ['tag1', 'tag2', 'tag3'],
-    views: 5,
-    contents: 15,
-    duration: '25:30',
-    published: true,
-  },
-  {
-    id: '2',
-    title: 'Basics of Odoo CRM',
-    tags: ['tag1', 'tag2', 'tag3'],
-    views: 20,
-    contents: 20,
-    duration: '20:35',
-    published: true,
-  },
-  {
-    id: '3',
-    title: 'About Odoo Courses',
-    tags: ['tag1', 'tag2', 'tag3'],
-    views: 10,
-    contents: 10,
-    duration: '10:20',
-    published: true,
-  },
-];
-
 const Dashboard: React.FC = () => {
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Courses');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Fetch courses from API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await courseAPI.getAllCourses();
+        const data = response.data || response;
+        // Convert tags string to array if needed
+        const coursesWithArrayTags = data.map((course: any) => ({
+          ...course,
+          tags: typeof course.tags === 'string' 
+            ? course.tags.split(' ').filter((t: string) => t) 
+            : course.tags
+        }));
+        setCourses(coursesWithArrayTags);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   // Filter courses based on search query
   const filteredCourses = useMemo(() => {
@@ -51,25 +47,30 @@ const Dashboard: React.FC = () => {
     );
   }, [courses, searchQuery]);
 
-  const handleCreateCourse = (courseName: string) => {
-    const newCourse: Course = {
-      id: Date.now().toString(),
-      title: courseName,
-      tags: [],
-      views: 0,
-      contents: 0,
-      duration: '00:00',
-      published: false,
-    };
-    setCourses([...courses, newCourse]);
+  const handleCreateCourse = async (courseName: string) => {
+    try {
+      const response = await courseAPI.createCourse({ title: courseName });
+      const newCourse = response.data || response;
+      // Convert tags if needed
+      const courseWithArrayTags = {
+        ...newCourse,
+        tags: typeof newCourse.tags === 'string' 
+          ? newCourse.tags.split(' ').filter((t: string) => t) 
+          : newCourse.tags || []
+      };
+      setCourses([...courses, courseWithArrayTags]);
+    } catch (error) {
+      console.error('Error creating course:', error);
+      alert('Failed to create course');
+    }
   };
 
   const handleEdit = (courseId: string) => {
-    alert(`Edit course: ${courseId}\n\nThis will open the course form where you can configure contents and course details.`);
+    navigate(`/courses/${courseId}/edit`);
   };
 
   const handleShare = (courseId: string) => {
-    const course = courses.find(c => c.id === courseId);
+    const course = courses.find(c => c._id === courseId);
     const shareLink = `https://elearning.app/course/${courseId}`;
     navigator.clipboard.writeText(shareLink);
     alert(`Course link copied to clipboard:\n${shareLink}\n\nShare this link with specific people to give them access to "${course?.title}".`);
@@ -78,7 +79,7 @@ const Dashboard: React.FC = () => {
   const handleRemoveTag = (courseId: string, tag: string) => {
     setCourses(
       courses.map((course) =>
-        course.id === courseId
+        course._id === courseId
           ? { ...course, tags: course.tags.filter((t) => t !== tag) }
           : course
       )
@@ -98,11 +99,13 @@ const Dashboard: React.FC = () => {
             onViewModeChange={setViewMode}
           />
           
-          {viewMode === 'kanban' ? (
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>Loading courses...</div>
+          ) : viewMode === 'kanban' ? (
             <div className="courses-kanban">
               {filteredCourses.map((course) => (
                 <CourseCard
-                  key={course.id}
+                  key={course._id}
                   course={course}
                   onEdit={handleEdit}
                   onShare={handleShare}

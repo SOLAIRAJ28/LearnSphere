@@ -20,7 +20,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
 
   return (
     <div className="course-card">
-      {course.published && <div className="published-badge">Published</div>}
+      {course.isPublished && <div className="published-badge">Published</div>}
       
       {imageUrl && (
         <div className="course-image">
@@ -37,7 +37,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
               {tag}
               <button
                 className="tag-remove"
-                onClick={() => onRemoveTag(course.id, tag)}
+                onClick={() => onRemoveTag(course._id, tag)}
                 title="Remove tag"
               >
                 ×
@@ -49,28 +49,28 @@ const CourseCard: React.FC<CourseCardProps> = ({
         <div className="course-stats">
           <div className="stat">
             <span className="stat-label">Views</span>
-            <span className="stat-value">{course.views}</span>
+            <span className="stat-value">{course.viewsCount}</span>
           </div>
           <div className="stat">
             <span className="stat-label">Contents</span>
-            <span className="stat-value">{course.contents}</span>
+            <span className="stat-value">{course.lessonsCount}</span>
           </div>
           <div className="stat">
             <span className="stat-label">Duration</span>
-            <span className="stat-value">{course.duration}</span>
+            <span className="stat-value">{course.totalDuration}</span>
           </div>
         </div>
         
         <div className="course-actions">
           <button
             className="action-btn share-btn"
-            onClick={() => onShare(course.id)}
+            onClick={() => onShare(course._id)}
           >
             Share
           </button>
           <button
             className="action-btn edit-btn"
-            onClick={() => onEdit(course.id)}
+            onClick={() => onEdit(course._id)}
           >
             Edit
           </button>

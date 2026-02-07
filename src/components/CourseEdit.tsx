@@ -28,7 +28,7 @@ const CourseEdit: React.FC = () => {
   // Content form states
   const [showContentForm, setShowContentForm] = useState(false);
   const [contentTitle, setContentTitle] = useState('');
-  const [contentCategory, setContentCategory] = useState<'Video' | 'Document' | 'Quiz' | 'Article' | 'Other'>('Document');
+  const [contentCategory, setContentCategory] = useState<'article' | 'video' | 'infographic' | 'presentation' | 'document' | 'quiz'>('document');
   const [contentDuration, setContentDuration] = useState('');
   const [editingContent, setEditingContent] = useState<Content | null>(null);
   
