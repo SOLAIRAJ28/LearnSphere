@@ -143,32 +143,65 @@ const AdminDashboard: React.FC = () => {
       {activeTab === 'Courses' && (
         <main className="dashboard-content">
           <div className="page-header-section">
-            <h1 className="page-title">Kongu Engineering College</h1>
-            <p className="page-subtitle">Digital Learning Management System for Academic Excellence and Innovation</p>
+            <h1 className="page-title">LearnSphere</h1>
+            <p className="page-subtitle">Empowering Education Through Technology</p>
             
-            <div className="feature-cards">
-              <div className="feature-card feature-card-organize">
-                <div className="feature-badge">DEPARTMENTS</div>
-                <h3 className="feature-title">Multi-Department</h3>
-                <p className="feature-text">Manage courses across CSE, ECE, Mechanical, Civil, and all engineering departments</p>
+            <div className="feature-banner">
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <div className="feature-info">
+                  <span className="feature-label">User Management</span>
+                  <span className="feature-desc">Students & Instructors</span>
+                </div>
               </div>
               
-              <div className="feature-card feature-card-content">
-                <div className="feature-badge">CURRICULUM</div>
-                <h3 className="feature-title">Academic Programs</h3>
-                <p className="feature-text">Comprehensive courses aligned with Anna University syllabus and industry standards</p>
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                  </svg>
+                </div>
+                <div className="feature-info">
+                  <span className="feature-label">Course Library</span>
+                  <span className="feature-desc">Extensive Content</span>
+                </div>
               </div>
               
-              <div className="feature-card feature-card-track">
-                <div className="feature-badge">ASSESSMENT</div>
-                <h3 className="feature-title">Student Evaluation</h3>
-                <p className="feature-text">Track student performance, attendance, and academic progress with detailed reports</p>
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                </div>
+                <div className="feature-info">
+                  <span className="feature-label">Assessments</span>
+                  <span className="feature-desc">Quizzes & Exams</span>
+                </div>
               </div>
               
-              <div className="feature-card feature-card-privacy">
-                <div className="feature-badge">ACCREDITED</div>
-                <h3 className="feature-title">Quality Education</h3>
-                <p className="feature-text">NAAC A+ accredited institution committed to excellence in technical education</p>
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div className="feature-info">
+                  <span className="feature-label">Progress Tracking</span>
+                  <span className="feature-desc">Analytics & Reports</span>
+                </div>
               </div>
             </div>
           </div>
@@ -248,31 +281,84 @@ const AdminDashboard: React.FC = () => {
       )}
       
       {activeTab === 'Settings' && (
-        <div className="tab-content">
-          <h2>Settings</h2>
-          <p>Application settings</p>
+        <div className="settings-container">
+          <div className="settings-header">
+            <h1>Settings</h1>
+            <p className="settings-subtitle">Manage your account information</p>
+          </div>
+
+          <div className="settings-grid">
+            {/* Profile Settings */}
+            <div className="settings-card">
+              <div className="settings-card-header">
+                <div className="settings-icon profile-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+                <div>
+                  <h3>Profile Settings</h3>
+                  <p>Manage your account information</p>
+                </div>
+              </div>
+              <div className="settings-card-content">
+                <div className="settings-item">
+                  <label>Admin Name</label>
+                  <input 
+                    type="text" 
+                    className="settings-input" 
+                    defaultValue="Administrator"
+                    placeholder="Enter your name"
+                  />
+                </div>
+                <div className="settings-item">
+                  <label>Email Address</label>
+                  <input 
+                    type="email" 
+                    className="settings-input" 
+                    defaultValue="admin@kec.edu"
+                    placeholder="Enter your email"
+                  />
+                </div>
+                <div className="settings-item">
+                  <label>Department</label>
+                  <select className="settings-input">
+                    <option>Information Technology</option>
+                    <option>Computer Science</option>
+                    <option>Electronics</option>
+                    <option>Mechanical</option>
+                    <option>Civil</option>
+                  </select>
+                </div>
+                <button className="settings-save-btn">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
       
       <footer className="app-footer">
         <div className="footer-content">
           <div className="footer-section">
-            <h3>Kongu Engineering College</h3>
-            <p>Perundurai, Erode - 638 060, Tamil Nadu, India</p>
+            <h3>LearnSphere</h3>
+            <p>Modern Learning Management System</p>
           </div>
           <div className="footer-section">
-            <h4>Contact</h4>
-            <p>Phone: +91-4294-226602</p>
-            <p>Email: principal@kongu.edu</p>
+            <h4>Support</h4>
+            <p>Email: support@learnsphere.com</p>
+            <p>Help Center: help.learnsphere.com</p>
           </div>
           <div className="footer-section">
-            <h4>Quick Links</h4>
-            <p>NAAC A+ Accredited</p>
-            <p>Autonomous Institution</p>
+            <h4>Resources</h4>
+            <p>Documentation</p>
+            <p>Community Forum</p>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2026 Kongu Engineering College. All rights reserved.</p>
+          <p>&copy; 2026 LearnSphere. All rights reserved.</p>
         </div>
       </footer>
     </div>

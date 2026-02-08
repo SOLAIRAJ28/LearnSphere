@@ -110,14 +110,14 @@ const Reporting: React.FC = () => {
 
   const getBadgeColor = (badge: string) => {
     const colors: { [key: string]: string } = {
-      'Newbie': '#9e9e9e',
-      'Explorer': '#2196f3',
-      'Achiever': '#4caf50',
-      'Specialist': '#ff9800',
-      'Expert': '#f44336',
-      'Master': '#9c27b0'
+      'Newbie': '#90caf9',
+      'Explorer': '#64b5f6',
+      'Achiever': '#42a5f5',
+      'Specialist': '#2196f3',
+      'Expert': '#1e88e5',
+      'Master': '#1565c0'
     };
-    return colors[badge] || '#9e9e9e';
+    return colors[badge] || '#90caf9';
   };
 
   return (

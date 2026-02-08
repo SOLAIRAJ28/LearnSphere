@@ -4,8 +4,9 @@ import { participantAPI } from '../services/api';
 import { getCurrentUser } from '../utils/auth';
 import LogoutButton from '../components/LogoutButton';
 import Certificate from './Certificate';
-import logo from '../assets/logo.svg';
 import '../styles/ParticipantDashboard.css';
+
+const logo = '/y.png';
 import '../styles/Certificate.css';
 
 interface Course {
@@ -222,7 +223,6 @@ const ParticipantDashboard: React.FC = () => {
         <div className="header-content">
           <div className="logo">
             <img src={logo} alt="LearnSphere" className="app-logo" />
-            <span className="logo-text">LearnSphere</span>
           </div>
           
           <div className="search-bar">
@@ -395,6 +395,29 @@ const ParticipantDashboard: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="app-footer">
+        <div className="footer-content">
+          <div className="footer-section">
+            <h3>LearnSphere</h3>
+            <p>Modern Learning Management System</p>
+          </div>
+          <div className="footer-section">
+            <h4>Support</h4>
+            <p>Email: support@learnsphere.com</p>
+            <p>Help Center: help.learnsphere.com</p>
+          </div>
+          <div className="footer-section">
+            <h4>Resources</h4>
+            <p>Documentation</p>
+            <p>Community Forum</p>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; 2026 LearnSphere. All rights reserved.</p>
+        </div>
+      </footer>
 
       {/* Certificate Modal */}
       {certificateCourse && (

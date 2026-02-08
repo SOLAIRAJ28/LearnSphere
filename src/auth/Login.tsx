@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.svg';
 import '../styles/Auth.css';
+
+const logo = '/y.png';
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -145,6 +146,11 @@ const Auth: React.FC = () => {
       {/* Left Section - Hero/Image */}
       <div className="auth-hero">
         <div className="hero-content">
+          <img 
+            src="/x.png" 
+            alt="LearnSphere" 
+            className="hero-image"
+          />
         </div>
       </div>
 
@@ -154,7 +160,6 @@ const Auth: React.FC = () => {
           {/* Logo */}
           <div className="auth-logo">
             <img src={logo} alt="LearnSphere" />
-            <h1>LearnSphere</h1>
           </div>
 
           {/* Tab Switcher */}
@@ -257,6 +262,9 @@ const Auth: React.FC = () => {
                 placeholder="Create a password"
                 required
               />
+              <small style={{ fontSize: '12px', color: '#666', marginTop: '4px', display: 'block' }}>
+                Must be 8+ characters with uppercase, lowercase, number, and special character
+              </small>
             </div>
 
             <div className="form-group">

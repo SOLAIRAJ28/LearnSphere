@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.svg';
 import '../styles/Auth.css';
+
+const logo = '/y.png';
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -146,7 +147,6 @@ const Auth: React.FC = () => {
         {/* Logo */}
         <div className="auth-logo">
           <img src={logo} alt="LearnSphere" />
-          <h1>LearnSphere</h1>
           <p>Your Gateway to Knowledge</p>
         </div>
 
