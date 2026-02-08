@@ -1,8 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const logo = '/y.png';
-
 interface HeaderProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -16,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange }) => {
     <header className="app-header">
       <div className="header-content">
         <div className="app-branding">
-          <img src={logo} alt="LearnSphere" className="app-logo" />
+          <span className="app-name">LearnSphere</span>
         </div>
         <nav className="header-nav">
           {tabs.map((tab) => (

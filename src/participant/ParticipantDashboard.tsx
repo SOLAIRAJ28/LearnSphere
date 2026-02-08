@@ -5,8 +5,6 @@ import { getCurrentUser } from '../utils/auth';
 import LogoutButton from '../components/LogoutButton';
 import Certificate from './Certificate';
 import '../styles/ParticipantDashboard.css';
-
-const logo = '/y.png';
 import '../styles/Certificate.css';
 
 interface Course {
@@ -222,7 +220,7 @@ const ParticipantDashboard: React.FC = () => {
       <header className="participant-header">
         <div className="header-content">
           <div className="logo">
-            <img src={logo} alt="LearnSphere" className="app-logo" />
+            <span className="logo-text">LearnSphere</span>
           </div>
           
           <div className="search-bar">

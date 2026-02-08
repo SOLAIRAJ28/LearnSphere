@@ -143,6 +143,60 @@ const CoursePlayer: React.FC = () => {
     setQuizScore({ correct: 0, total: 0, passed: false });
   };
 
+  const handlePreviousContent = () => {
+    if (showQuiz) {
+      // If currently showing quiz, go back to the last content
+      if (contents.length > 0) {
+        const lastContent = contents[contents.length - 1];
+        setSelectedContent(lastContent);
+        setShowQuiz(false);
+        setQuizSubmitted(false);
+        setSelectedAnswers({});
+      }
+      return;
+    }
+
+    if (!selectedContent || contents.length === 0) return;
+    
+    const currentIndex = contents.findIndex(c => c._id === selectedContent._id);
+    if (currentIndex > 0) {
+      setSelectedContent(contents[currentIndex - 1]);
+    }
+  };
+
+  const handleNextContent = () => {
+    if (!selectedContent || contents.length === 0) return;
+    
+    const currentIndex = contents.findIndex(c => c._id === selectedContent._id);
+    if (currentIndex < contents.length - 1) {
+      setSelectedContent(contents[currentIndex + 1]);
+      setShowQuiz(false);
+      setQuizSubmitted(false);
+      setSelectedAnswers({});
+    } else if (quizzes.length > 0 && !quizCompleted) {
+      // After last content, move to quiz if available
+      handleStartQuiz(quizzes[0]);
+    }
+  };
+
+  const getCurrentContentIndex = () => {
+    if (showQuiz) return contents.length; // Quiz is after all contents
+    if (!selectedContent) return -1;
+    return contents.findIndex(c => c._id === selectedContent._id);
+  };
+
+  const canGoPrevious = () => {
+    if (showQuiz && contents.length > 0) return true;
+    const currentIndex = getCurrentContentIndex();
+    return currentIndex > 0;
+  };
+
+  const canGoNext = () => {
+    if (showQuiz) return false;
+    const currentIndex = getCurrentContentIndex();
+    return currentIndex < contents.length - 1 || (quizzes.length > 0 && !quizCompleted);
+  };
+
   const handleQuizCancel = () => {
     setShowQuiz(false);
     setActiveQuiz(null);
@@ -427,7 +481,7 @@ const CoursePlayer: React.FC = () => {
                           🔄 Retake Quiz
                         </button>
                       )}
-                      <button className="cp-quiz-back-btn" onClick={() => { setShowQuiz(false); if (contents.length > 0) setSelectedContent(contents[0]); }}>
+                      <button className="cp-quiz-back-btn" onClick={handlePreviousContent}>
                         ← Back to Content
                       </button>
                     </div>
@@ -549,6 +603,24 @@ const CoursePlayer: React.FC = () => {
                 {selectedContent.description && (
                   <p className="cp-content-description">{selectedContent.description}</p>
                 )}
+              </div>
+
+              {/* Content Navigation */}
+              <div className="cp-content-navigation">
+                <button
+                  className="cp-nav-btn cp-nav-prev"
+                  onClick={handlePreviousContent}
+                  disabled={!canGoPrevious()}
+                >
+                  ← Previous
+                </button>
+                <button
+                  className="cp-nav-btn cp-nav-next"
+                  onClick={handleNextContent}
+                  disabled={!canGoNext()}
+                >
+                  Next →
+                </button>
               </div>
             </>
           ) : (
@@ -720,8 +792,7 @@ const CoursePlayer: React.FC = () => {
                   className="qpm-btn qpm-btn-cancel" 
                   onClick={() => {
                     setQuizSubmitted(false);
-                    setShowQuiz(false);
-                    if (contents.length > 0) setSelectedContent(contents[0]);
+                    handlePreviousContent();
                   }}
                 >
                   ← Back to Content
